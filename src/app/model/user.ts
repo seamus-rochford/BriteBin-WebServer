@@ -1,14 +1,17 @@
 import { Country } from './country';
+import { Role } from './role';
+import { Status } from './status';
+import { Locale } from './locale';
 
 export class User {
     id: number;
     email: string;
     password: string;
-    role: number;
+    role: Role;
     parentId: number;
-    status: number;
+    status: Status;
 
-    locale: string;
+    locale: Locale;
     name: string;
     addr1: string;
     addr2: string;

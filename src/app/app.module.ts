@@ -18,6 +18,8 @@ import { UserComponent } from './users/user/user.component';
 import { ResetPwdComponent } from './users/reset-pwd/reset-pwd.component';
 import { UnitsComponent } from './units/units/units.component';
 import { UnitComponent } from './units/unit/unit.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { UnitComponent } from './units/unit/unit.component';
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FontAwesomeModule,
+    NgbModule
   ],
   providers: [
     AuthService,

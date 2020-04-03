@@ -32,6 +32,7 @@ export class AuthService {
     }
   
     loggedIn() {
+      // console.log('loggedIn: ' + !!localStorage.getItem('token') && !!localStorage.getItem('user'));
       return !!localStorage.getItem('token') && !!localStorage.getItem('user');
     }
   
