@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -7,6 +8,7 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { TokenInterceptorService } from './token-interceptor.service';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -21,6 +23,15 @@ import { UnitComponent } from './units/unit/unit.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { registerLocaleData } from '@angular/common';
+import localeIE from '@angular/common/locales/en-IE';
+import localeHR from '@angular/common/locales/hr';
+import { MaterialModule } from './material/material.module';
+import { ConfirmationDialogComponent } from './components/shared/confirmation-dialog/confirmation-dialog.component';
+
+registerLocaleData(localeIE, 'en-IE');
+registerLocaleData(localeHR, 'hr-HR');
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,11 +43,15 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     UserComponent,
     ResetPwdComponent,
     UnitsComponent,
-    UnitComponent
+    UnitComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
+    MaterialModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
     FontAwesomeModule,
@@ -49,8 +64,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptorService,
       multi: true
-    }
+    },
+    { provide: LOCALE_ID, useValue: 'en-IE'},
+    { provide: LOCALE_ID, useValue: 'hr-HR'},
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

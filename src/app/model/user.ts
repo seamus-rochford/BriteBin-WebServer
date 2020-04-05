@@ -8,10 +8,13 @@ export class User {
     email: string;
     password: string;
     role: Role;
+    roleSort: string;
     parentId: number;
     status: Status;
+    statusSort: string;
 
     locale: Locale;
+    localeSort: string;
     name: string;
     addr1: string;
     addr2: string;
@@ -19,6 +22,7 @@ export class User {
     county: string;
     postcode: string;
     country: Country;
+    countrySort: string;
     
     mobile: string;
     homeTel: string;
@@ -27,9 +31,12 @@ export class User {
     binLevelAlert: number;
 
     lastLoggedIn: Date;
+    lastLoggedInStr: string;
     lastActivity: Date;
+    lastActivityStr: string;
 
     insertDate: Date;
+    insertDateStr: string;
     insertBy: number;
     modifiedDate: Date;
     modifiedBy: number;

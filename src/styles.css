@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 /* Application-wide Styles */
 h1 {
@@ -50,13 +51,18 @@ body {
     padding: 0 15px;
 }
 
-.header {
+header {
+    background-color: #da291c;
+}
+
+.form-header {
     font-size: 16px;
     font-weight: 600;
     color: white;
-    background-color: #999999;
+    background-color: #6295ac;
     padding: 10px;
 }
+
 .spacer {
     height: 20px;
 }
@@ -64,3 +70,4 @@ body {
 .table-header {
     background-color: #bcbcbc;
 }
+
