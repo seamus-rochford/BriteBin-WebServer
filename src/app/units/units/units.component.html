@@ -1,1 +1,97 @@
-<p>units works!</p>
+<kendo-dialog *ngIf="displayWaitingDialog">
+    <img class="waitingDialog" src="../../../assets/images/loader_dark.gif" alt="../../../assets/images/loader.gif">
+</kendo-dialog>
+<div class="container-fluid">
+    <div class="spacer"></div>
+    <div class="form-header">
+        List Bins
+    </div>
+    <div class="spacer"></div>
+    <div class="row no-gutters">
+        <div class="col text-right">
+            <input [(ngModel)]="unitSearchStr" type="text" size="200" placeholder=" Search by any field ..." (keyup)="doSearch()">&nbsp;
+            <button type="button" class="btn btn-primary" name="btnSearch" (click)="doSearch()"><fa-icon [icon]="faSearch"></fa-icon> Search</button>
+        </div>
+    </div>
+    <div class="spacer"></div>
+    <div>
+        <table class="table table-striped table-bordered">
+            <thead class="table-header">
+                <tr>
+                    <th style="text-align: center;">
+                        <input type="checkbox" id="allCheckbox" name="allCheckbox" class="checkbox">
+                    </th>
+                    <th scope="col" (click)="sortBySerialNo()">Serial No.</th>
+                    <th scope="col" (click)="sortByLocation()">Location</th>
+                    <th scope="col" (click)="sortByLatitude()">Latitude</th>
+                    <th scope="col" (click)="sortByLongitude()">Longitude</th>
+                    <th scope="col" (click)="sortByDeviceType()">Device Type</th>
+                    <th scope="col" (click)="sortByBinType()">Bin Type</th>
+                    <th scope="col" (click)="sortByContentType()">Content Type</th>
+                    <th scope="col" (click)="sortByEmptyLevel()">Empty Level</th>
+                    <th scope="col" (click)="sortByLastActivity()">Last Activity</th>
+                    <th scope="col" (click)="sortByCreated()">Created</th>
+                </tr>
+            </thead>
+            <tbody class="table-body">
+                <tr *ngFor="let unit of units; let i = index" >
+                    <td style="text-align: center;">
+                        <input type="checkbox" id={{unit.id}} value={{unit.id}} name="checkbox" class="checkbox">
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.serialNo }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.location }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.latitude }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.longitude }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.deviceType.name }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.binType.name }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.contentType.name }}
+                    </td>
+                    <td (click)="editUnit(unit.id)" *ngIf="unit.useBinTypeLevel">
+                        {{ unit.binType.emptyLevel }}* 
+                    </td>
+                    <td (click)="editUnit(unit.id)" *ngIf="!unit.useBinTypeLevel">
+                        {{ unit.emptyLevel }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.lastActivityStr }}
+                    </td>
+                    <td (click)="editUnit(unit.id)">
+                        {{ unit.insertDateStr }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="spacer"></div>
+        <div class="row nogutters">
+            <div class="col">
+                <button type="button" class="btn btn-primary" (click)="onBack()">
+                    <fa-icon [icon]="faBack"></fa-icon> Back
+                </button>
+                &nbsp;
+                <button type="button" class="btn btn-primary" (click)="editUnit(0)">
+                    <fa-icon [icon]="faBin"></fa-icon> Add Bin
+                </button>
+            </div>        
+            <div class="col text-right">
+                <button type="button" class="btn btn-primary"><fa-icon [icon]="faFilePdf" class="fa-1x"></fa-icon>   PDF Export</button>
+                &nbsp;
+                <button type="button" class="btn btn-primary"><fa-icon [icon]="faFileExcel"></fa-icon> Excel Export</button>
+            </div>
+        </div>
+        <div class="spacer"></div>
+    </div>
+</div>
+

@@ -21,9 +21,9 @@ export class LookupService {
 
 
   // GET binContentTypes
-  getBinContentTypes() {
-    const url = `${this.lookupUrl}/getBinContentTypes`;
-    console.log('Get binContentTypes Url: ' + url);
+  getContentTypes() {
+    const url = `${this.lookupUrl}/getContentTypes`;
+    console.log('Get contentTypes Url: ' + url);
     return this.httpClient.get(url).toPromise();
   }
 
@@ -32,6 +32,14 @@ export class LookupService {
   getCountries() {
     const url = `${this.lookupUrl}/getCountries`;
     console.log('Get getCountries Url: ' + url);
+    return this.httpClient.get(url).toPromise();
+  }
+
+
+  // GET deviceTypes
+  getDeviceTypes() {
+    const url = `${this.lookupUrl}/getDeviceTypes`;
+    console.log('Get deviceTypes Url: ' + url);
     return this.httpClient.get(url).toPromise();
   }
 

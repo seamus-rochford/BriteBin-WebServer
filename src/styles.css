@@ -15,7 +15,7 @@ h2, h3 {
 body {
     margin: 2em;
 }
-body, input[type="text"], button {
+body, input[type="text"], select, button {
     color: #333;
     font-family: serif, sans-serif, Verdana;
     font-size: 14px;
@@ -55,6 +55,13 @@ header {
     background-color: #da291c;
 }
 
+footer {
+    padding: 5px;
+    background-color: #da291c;
+    color: wheat;
+    text-align: center;
+}
+
 .form-header {
     font-size: 16px;
     font-weight: 600;
@@ -71,3 +78,18 @@ header {
     background-color: #bcbcbc;
 }
 
+select, input {
+    width:220px;
+    height:25px;
+}
+
+.errorMessage {
+    padding: 5px;
+    color: #da291c;
+    font-weight: bold;
+}
+
+.waitingDialog {
+    height: 300px;
+    width: 300px;
+}

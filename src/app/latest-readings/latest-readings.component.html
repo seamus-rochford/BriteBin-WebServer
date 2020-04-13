@@ -1,0 +1,146 @@
+<kendo-dialog *ngIf="displayWaitingDialog">
+    <img class="waitingDialog" src="../../../assets/images/loader2.gif" alt="../../../assets/images/loader2.gif">
+</kendo-dialog>
+<div class="container-fluid">
+    <div class="spacer"></div>
+    <div class="form-header">
+        Lastest Reading for all Bins
+    </div>
+    <div class="spacer"></div>
+    <div class="row no-gutters">
+        <div class="col text-right">
+            <input [(ngModel)]="readingsSearchStr" type="text" size="200" placeholder=" Search by any field ..." (keyup)="doSearch()">&nbsp;
+            <button type="button" class="btn btn-primary" name="btnSearch" (click)="doSearch()"><fa-icon [icon]="faSearch"></fa-icon> Search</button>
+        </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="tableFixHead">
+        <table class="table table-striped table-bordered">
+            <thead class="table-header">
+                <tr>
+                    <th style="text-align: center;">
+                        <input type="checkbox" id="allCheckbox" name="allCheckbox" class="checkbox">
+                    </th>
+                    <th scope="col" (click)="sortByLocation()">Location</th>
+                    <th scope="col" (click)="sortByBinType()">Type</th>
+                    <th scope="col" (click)="sortByContentType()">Content</th>
+                    <th scope="col" (click)="sortByBinLevel()">Bin Level</th>
+                    <th scope="col" (click)="sortByBinLevelBC()">Level B.C.</th>
+                    <th scope="col" (click)="sortByNoFlapOpenings()">No. Flap Openings</th>
+                    <th scope="col" (click)="sortByBatteryVoltage()">Batt. Vol.</th>
+                    <th scope="col" (click)="sortByTemperature()">Temp. (C)</th>
+                    <th scope="col" (click)="sortByNoCompactions()">No. Comp.</th>
+                    <th scope="col" title="Battery UVLO">F1</th>
+                    <th scope="col" title="Emptied Last Period">F2</th>
+                    <th scope="col" title="Battery Over TempLO">F3</th>
+                    <th scope="col" title="Bin Locked">F4</th>
+                    <th scope="col" title="Bin Full">F5</th>
+                    <th scope="col" title="Bin Tilted">F6</th>
+                    <th scope="col" title="Service Door Open">F7</th>
+                    <th scope="col" title="Flap Stuck Open">F8</th>
+                    <th scope="col" (click)="sortByReadingTime()">Reading Time</th>
+                    <th scope="col" (click)="sortByMsgType()">Msg. Type</th>
+                    <th scope="col" (click)="sortByRssi()">RSSI</th>
+                    <th scope="col" (click)="sortBySrc()">SRC</th>
+                    <th scope="col" (click)="sortBySnr()">SNR</th>
+                    <th scope="col" (click)="sortByBer()">BER</th>
+                    <th scope="col" (click)="sortByRsrq()">RSRQ</th>
+                    <th scope="col" (click)="sortByRsrp()">RSRP</th>
+                </tr>
+            </thead>
+            <tbody class="table-body">
+                <tr *ngFor="let reading of readings; let i = index" >
+                    <td style="text-align: center;">
+                        <input type="checkbox" id={{reading.id}} value={{reading.id}} name="select-checkbox" class="checkbox">
+                    </td>
+                    <td (click)="editUnit(reading.unit.id)">
+                        {{ reading.unit.location }}
+                    </td>
+                    <td (click)="editUnit(reading.unit.id)">
+                        {{ reading.unit.binType.name }}
+                    </td>
+                    <td (click)="editUnit(reading.unit.id)">
+                        {{ reading.unit.contentType.name }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.binLevel }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.binLevelBC }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.noFlapOpenings }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.batteryVoltage }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.temperature }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.noCompactions }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Battery UVLO">
+                        <input type="checkbox" ng-checked="reading.batteryUVLO" [(ngModel)]="reading.batteryUVLO" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Bin Emptied Last Period">
+                        <input type="checkbox" ng-checked="reading.binEmpiedLastPeriod" [(ngModel)]="reading.binEmpiedLastPeriod" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Battery Over Temp. LO">
+                        <input type="checkbox" ng-checked="reading.batteryOverTempLO" [(ngModel)]="reading.batteryOverTempLO" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Bin Locked">
+                        <input type="checkbox" ng-checked="reading.binLocked" [(ngModel)]="reading.binLocked" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Bin Full">
+                        <input type="checkbox" ng-checked="reading.binFull" [(ngModel)]="reading.binFull" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Bin Tilted">
+                        <input type="checkbox" ng-checked="reading.binTilted" [(ngModel)]="reading.binTilted" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Service Door Open">
+                        <input type="checkbox" ng-checked="reading.serviceDoorOpen" [(ngModel)]="reading.serviceDoorOpen" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" title="Flap Stuck Open">
+                        <input type="checkbox" ng-checked="reading.flapStuckOpen" [(ngModel)]="reading.flapStuckOpen" class="checkbox" disabled>
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.readingDateTimeStr }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.messageType }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.rssi }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.src }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.snr }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.ber }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.rsrq }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.rsrp }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <div class="spacer"></div>
+        <div class="row nogutters">      
+            <div class="col text-right">
+                <button type="button" class="btn btn-primary"><fa-icon [icon]="faFilePdf" class="fa-1x"></fa-icon>   PDF Export</button>
+                &nbsp;
+                <button type="button" class="btn btn-primary"><fa-icon [icon]="faFileExcel"></fa-icon> Excel Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+

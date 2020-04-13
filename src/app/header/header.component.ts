@@ -20,7 +20,6 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     // Get current user from AuthService
     this.currUser = this.authService.getUser();
-    console.log('currUser: ' + this.currUser);
 
     // Return the displayName
     if (this.currUser !== null) {
@@ -61,6 +60,19 @@ export class HeaderComponent implements OnInit {
       }
     }
     return this.displayName;
+  }
+
+  public maintenaceMenuVisible() {
+    let currentRoleId = 100;
+    // Get current user from AuthService
+    const currUser = this.authService.getUser();
+
+    if (currUser !== null) {
+      // Return the displayName
+      currentRoleId = currUser.role.id;
+    }
+
+    return currentRoleId < 3;
   }
 }
 

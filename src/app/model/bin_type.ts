@@ -1,4 +1,5 @@
 export class BinType {
-    id: number;
-    name: string;
+    id: number = 0;
+    name: string = '';
+    emptyLevel: number;
 }

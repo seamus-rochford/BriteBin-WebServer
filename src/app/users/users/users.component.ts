@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DatePipe, Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { UserService } from 'src/app/user.service';
 import { LookupService } from 'src/app/lookup.service';
@@ -7,19 +8,20 @@ import { AuthService } from 'src/app/auth.service';
 import { dynamicSort, toggleSort } from 'src/app/shared/dynamic-sort';
 
 import { User } from 'src/app/model/user';
-import { Role } from 'src/app/model/role';
 import { Status } from 'src/app/model/status';
-import { Locale } from 'src/app/model/locale';
-import { Country } from 'src/app/model/country';
 import { UserSearch } from 'src/app/model/user_search';
 
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { faToggleOn } from '@fortawesome/free-solid-svg-icons';
 import { faToggleOff } from '@fortawesome/free-solid-svg-icons';
+
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from './../../components/shared/confirmation-dialog/confirmation-dialog.component';
 
 import { FormGroup, FormBuilder } from '@angular/forms';
 
@@ -36,14 +38,13 @@ const clone = obj => JSON.parse(JSON.stringify(obj));
 
 export class UsersComponent implements OnInit {
 
-  @ViewChild('content', { static: false }) content: ElementRef;
-
   userSearchStr: '';
   userSearch: UserSearch;
 
   // fontawesome icons
   faSearch = faSearch;
   faUser = faUser;
+  faBack = faAngleLeft;
   faUserPlus = faUserPlus;
   faFilePdf = faFilePdf;
   faFileExcel = faFileExcel;
@@ -51,14 +52,11 @@ export class UsersComponent implements OnInit {
   faToggleOff = faToggleOff;
 
   locale: string;
+  loggedInUser: User;
+
   allUsers: User[];   // stores all users
   users: User[];      // stores all users filtered by screen filters
 
-  roles: Role[];
-  status: Status[];
-  locales: Locale[];
-  countries: Country[];
-  
   sortOrderStatus = 0;
   sortOrderEmail = 0;
   sortOrderRole = 0;
@@ -71,29 +69,34 @@ export class UsersComponent implements OnInit {
   sortOrderLocale = 0;
   sortOrderCreated = 0;
 
+  status: Status[];
+
+  displayWaitingDialog = true;
+
   constructor(
     private formBuilder: FormBuilder,
-    private auth: AuthService,
+    private authService: AuthService,
     private userService: UserService,
     private lookupService: LookupService,
     private datePipe: DatePipe,
-    private location: Location
+    private location: Location,
+    public dialog: MatDialog,
+    public router: Router
   ) { }
 
   ngOnInit(): void {
     console.log('User List - Init - start');
 
-    Promise.all([
-      this.getRoles(),
-      this.getStatus(),
-      this.getLocales(),
-      this.getCountries()
-    ]).then(values => {
-      this.getUsers();
-    });
+    // $(document).ready(() => {
+    //   modals();
+    // });
 
-    const loggedInUser = this.auth.getUser();
-    this.locale = loggedInUser.locale.abbr;
+    this.getStatus();
+
+    this.getUsers();
+
+    this.loggedInUser = this.authService.getUser();
+    this.locale = this.loggedInUser.locale.abbr;
 
     $('#allCheckbox').change(function () {
       $('tbody tr td input[type="checkbox"]').prop('checked', $(this).prop('checked'));
@@ -103,14 +106,18 @@ export class UsersComponent implements OnInit {
     this.userSearch.searchStr = [];
   }
 
+  async getStatus() {
+    this.status = (await (this.lookupService.getStatus())) as Status[];
+  }
+
   getUsers(): void {
-    this.userService.getUsers().subscribe (
+    this.userService.getUsers().subscribe(
       users => {
         console.log({ users });
 
         let tempUsers: User[] = clone(users);
         tempUsers = this.setUserValues(tempUsers);
-        
+
         this.allUsers = tempUsers;
         this.users = tempUsers;
       }
@@ -142,34 +149,20 @@ export class UsersComponent implements OnInit {
       user.localeSort = user.locale.name;
       user.countrySort = user.country.name;
       user.insertDateStr = this.formatDate(user.insertDate);
+      user.modifiedDateStr = this.formatDate(user.modifiedDate);
 
       user.lastLoggedInStr = this.formatDate(user.lastLoggedIn);
       user.lastActivityStr = this.formatDate(user.lastActivity);
 
-      if(user.addr1 == null) { user.addr1 = ''; }
-      if(user.addr2 == null) { user.addr2 = ''; }
-      if(user.city == null) { user.city = ''; }
-      if(user.county == null) { user.county = ''; }
+      if (user.addr1 == null) { user.addr1 = ''; }
+      if (user.addr2 == null) { user.addr2 = ''; }
+      if (user.city == null) { user.city = ''; }
+      if (user.county == null) { user.county = ''; }
     });
 
-    console.log('setClientValues - end');
+    console.log('setUserValues - end');
+    this.displayWaitingDialog = false;
     return filteredProperties;
-  }
-
-  async getRoles() {
-    this.roles = (await (this.lookupService.getRoles())) as Role[];
-  }
-
-  async getStatus() {
-    this.status = (await (this.lookupService.getStatus())) as Status[];
-  }
-  
-  async getLocales() {
-    this.locales = (await (this.lookupService.getLocales())) as Locale[];
-  }
-  
-  async getCountries() {
-    this.countries = (await (this.lookupService.getCountries())) as Country[];
   }
 
   private filter() {
@@ -201,7 +194,7 @@ export class UsersComponent implements OnInit {
                 || (userObject.country.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (userObject.locale.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (userObject.locale.abbr.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
-                );
+              );
           });
         }
 
@@ -219,8 +212,8 @@ export class UsersComponent implements OnInit {
     console.log('userSearchStr: ' + this.userSearchStr);
     this.userSearch.searchStr = this.userSearchStr.split(' ');
     this.filter();
-  } 
-  
+  }
+
   public sortByStatus() {
     this.sortOrderStatus = toggleSort(this.sortOrderStatus);
     this.users.sort(dynamicSort('statusSort', this.sortOrderStatus));
@@ -276,5 +269,107 @@ export class UsersComponent implements OnInit {
     this.users.sort(dynamicSort('insertDate', this.sortOrderCreated));
   }
 
- 
+  private getActiveStatus() {
+    for (let i = 0; i < this.status.length; i++) {
+      if (this.status[i].id === 1) {
+        return this.status[i];
+      }
+    }
+  }
+
+  private getRegisteredStatus() {
+    for (let i = 0; i < this.status.length; i++) {
+      if (this.status[i].id === 0) {
+        return this.status[i];
+      }
+    }
+  }
+  
+  private getInactiveStatus() {
+    for (let i = 0; i < this.status.length; i++) {
+      if (this.status[i].id === -1) {
+        return this.status[i];
+      }
+    }
+  }
+  
+  openDialogDeactivate(userId): void {
+    console.log("Deactivate userId: " + userId);
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: "Are you sure you want to de-activate this user?"
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Yes clicked');
+        // DO SOMETHING
+        this.userService.deactivateById(userId).subscribe(users => {
+          console.log(`After deactivation`, { users });
+        })
+
+        const inActiveStatus = this.getInactiveStatus();
+
+        for (let i = 0; i < this.users.length; i++) {
+          if (this.users[i].id === userId) {
+            this.users[i].status = inActiveStatus;
+          }
+        }
+
+        // reset in global array also
+        for (let i = 0; i < this.allUsers.length; i++) {
+          if (this.allUsers[i].id === userId) {
+            this.allUsers[i].status = inActiveStatus;
+          }
+        }
+      };
+    });
+  }
+
+  openDialogReactivate(userId): void {
+    console.log("Activate userId: " + userId);
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: "Are you sure you want to re-activate this user?"
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Yes clicked');
+        // DO SOMETHING
+        this.userService.activateById(userId).subscribe(users => {
+          console.log(`After deactivation`, { users });
+        })
+
+
+        const registeredStatus = this.getRegisteredStatus();
+
+        for (let i = 0; i < this.users.length; i++) {
+          if (this.users[i].id === userId) {
+            this.users[i].status = registeredStatus;
+          }
+        }
+
+        // reset in global array also
+        for (let i = 0; i < this.allUsers.length; i++) {
+          if (this.allUsers[i].id === userId) {
+            this.allUsers[i].status = registeredStatus;
+          }
+        }
+      }
+    });
+  }
+
+  public editUser(userId) {
+
+    console.log('Edit user: ' + userId);
+
+    // this.router.navigate(['/user', { id: userId }]);
+    this.router.navigateByUrl('user/' + userId);
+  }
+
+  onBack() {
+    console.log("Back Clicked");
+    this.location.back();
+  }
+
 }

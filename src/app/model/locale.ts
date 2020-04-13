@@ -1,4 +1,4 @@
 export class Locale {
-    abbr: string;
-    name: string;
+    abbr: string = '';
+    name: string = '';
 }

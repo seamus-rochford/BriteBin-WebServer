@@ -1,1 +1,192 @@
-<p>user works!</p>
+<kendo-dialog *ngIf="displayWaitingDialog">
+    <img class="waitingDialog" src="../../../assets/images/loader_dark.gif" alt="../../../assets/images/loader.gif">
+</kendo-dialog>
+<div class="container" *ngIf="user">
+    <div class="form-header row">
+        <div class="col-12" *ngIf="user.id == 0">
+            <span><fa-icon [icon]="faUser"></fa-icon>&nbsp;&nbsp;Add User</span>
+        </div>
+        <div class="col-12" *ngIf="user.id != 0">
+            <span><fa-icon [icon]="faUser"></fa-icon>&nbsp;&nbsp;Edit User - {{ user.email }}</span>
+        </div> 
+    </div>
+    <div class="spacer"></div>
+    <div class="row justify-content-end errorMessage" *ngIf="errorMsg !== ''">
+        <span><fa-icon [icon]="faExclamation"></fa-icon>&nbsp;&nbsp;{{ errorMsg }}</span>
+    </div>
+    <div class="row justify-content-md-center" *ngIf="user.id == 0">
+        <div class="col-2"></div>
+        <div class="col-3"></div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label>E-mail:</label>
+            <input type="hidden" [(ngModel)]="user.id">
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.email" type="email" name="email" email>
+        </div>
+        <div class="col-2">
+            <label>Name</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.name" type="text" placeholder="Name ...">
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label *ngIf="user.id == 0">Password:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.newPassword" type="password" *ngIf="user.id == 0">
+        </div>
+        <div class="col-2">
+            <label >Address Line 1</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.addr1" type="text" >
+        </div>
+    </div>   
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label *ngIf="user.id == 0">Confirm Password:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.confirmPassword" type="password" *ngIf="user.id == 0" >
+        </div>
+        <div class="col-2">
+            <label >Address Line 2</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.addr2" type="text" >
+        </div>
+    </div>   
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Role</label>
+        </div>
+        <div class="col-3">
+            <select [(ngModel)]="user.role" [compareWith]="compareById">
+                <option *ngFor="let role of roles" [ngValue]="role" [selected]="role.id === user.role.id">
+                    {{ role.name }}
+                </option>
+            </select>          
+        </div>
+        <div class="col-2">
+            <label >City</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.city" type="text" >
+        </div>
+    </div>   
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Locale</label>
+        </div>
+        <div class="col-3">
+            <select [(ngModel)]="user.locale" [compareWith]="compareByName">
+                <option *ngFor="let locale of locales" [ngValue]="locale">
+                    {{ locale.name }}
+                </option>
+            </select>        
+        </div>
+        <div class="col-2">
+            <label >County</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.county" type="text" >
+        </div>
+    </div>  
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Bin Level Alert</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.binLevelAlert" type="number" style="width: 40px;">&nbsp;%          
+        </div>
+        <div class="col-2">
+            <label >Postcode</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.postcode" type="text" >
+        </div>
+    </div>  
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Status</label>
+        </div>
+        <div class="col-3">
+            <input type="hidden" value="user.status.id">
+            <input type="text" readonly value="{{ user.status.name }}" style="background-color:lightgrey;">
+        </div>
+        <div class="col-2">
+            <label id="status">Country</label>
+        </div>
+        <div class="col-3">
+            <select required [(ngModel)]="user.country" [compareWith]="compareById">
+                <option *ngFor="let country of countries" [ngValue]="country">
+                    {{ country.name }}
+                </option>
+            </select>                             
+        </div>
+    </div>  
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Parent</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.parentId" type="hidden">
+            <input [(ngModel)]="user.parentName" type="text" readonly style="background-color:lightgrey;">         
+        </div>
+        <div class="col-2">
+            <label >Mobile</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.mobile" type="text">
+        </div>
+    </div>  
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Last Logged In</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.lastLoggedInStr" type="text" readonly style="background-color:lightgrey;">         
+        </div>
+        <div class="col-2">
+            <label >Work Tel.</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.workTel" type="text" >
+        </div>
+    </div>  
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Last Activity</label>
+        </div>
+        <div class="col-3">
+            <input [ngModel]="user.lastActivityStr" type="text" readonly style="background-color:lightgrey;">          
+        </div>
+        <div class="col-2">
+            <label >Home Tel.</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="user.homeTel" type="text" >
+        </div>
+    </div>  
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="row justify-content-md-center">
+        <div class="col-3">
+            <button type="button" class="btn btn-primary " (click)="onBack()">
+                <fa-icon [icon]="faClose"></fa-icon> Close
+            </button>
+        </div>
+        <div class="col-3 text-right">
+            <button type="button" class="btn btn-primary" (click)="onSave()">
+                <fa-icon [icon]="faSave"></fa-icon> Save
+            </button>
+        </div>
+    </div>
+    <div class="spacer"></div>
+</div>

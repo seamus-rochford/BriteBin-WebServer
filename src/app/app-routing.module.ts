@@ -9,6 +9,9 @@ import { UserComponent } from './users/user/user.component';
 import { ResetPwdComponent } from './users/reset-pwd/reset-pwd.component';
 import { UnitsComponent } from './units/units/units.component';
 import { UnitComponent } from './units/unit/unit.component';
+import { UnitReadingsComponent } from './units/unit-readings/unit-readings.component';
+import { LatestReadingsComponent } from './latest-readings/latest-readings.component';
+import { MapComponent } from './map/map.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -16,9 +19,12 @@ const routes: Routes = [
   { path: 'resetPwd', component: ResetPwdComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
-  { path: 'user', component: UserComponent, canActivate: [AuthGuard] },
+  { path: 'user/:id', component: UserComponent, canActivate: [AuthGuard] },
   { path: 'units', component: UnitsComponent, canActivate: [AuthGuard] },
-  { path: 'unit', component: UnitComponent, canActivate: [AuthGuard] },
+  { path: 'unit/:id', component: UnitComponent, canActivate: [AuthGuard] },
+  { path: 'unitReadings/:id', component: UnitReadingsComponent, canActivate: [AuthGuard] },
+  { path: 'latestReadings', component: LatestReadingsComponent, canActivate: [AuthGuard] },
+  { path: 'map', component: MapComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '/login' }
 

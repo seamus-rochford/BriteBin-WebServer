@@ -41,8 +41,14 @@ export class AuthService {
     }
   
     getUser() {
+      // console.log(this.user);
       this.user = JSON.parse(localStorage.getItem('user'));
       return this.user;
+    }
+
+    getLocale() {
+      this.user = JSON.parse(localStorage.getItem('user'));
+      return this.user.locale;
     }
   
     verifyToken() {

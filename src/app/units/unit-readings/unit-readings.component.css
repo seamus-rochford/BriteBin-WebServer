@@ -1,0 +1,26 @@
+.checkbox {
+    width: 20px;
+    height: 15px;
+}
+
+.tableFixHead { 
+    overflow-y: auto; 
+    height: 628px; 
+}
+.tableFixHead thead th { 
+    position: sticky; top: 0;
+}
+
+table { 
+    border-collapse: collapse; 
+    width: 100%; 
+}
+th { 
+    background:darkgrey; 
+    text-align: center;
+    padding: 2px;
+}
+td {
+    text-align: center;
+    padding: 1px;
+}

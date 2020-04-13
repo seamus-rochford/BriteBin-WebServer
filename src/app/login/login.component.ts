@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   }
   ngOnInit(): void {
     console.log('login page');
-    localStorage.clear();
+    // localStorage.clear();
   }
 
   loginUser() {
@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('user', res.user);
 
           // Successfully logged in - navigate to the default page
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/latestReadings']);
         },
         err => {
           console.log('Login Error: ', err);

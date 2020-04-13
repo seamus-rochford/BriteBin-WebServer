@@ -7,37 +7,41 @@ export class User {
     id: number;
     email: string;
     password: string;
-    role: Role;
+    newPassword: string;
+    confirmPassword: string;
+    role: Role = new Role();
     roleSort: string;
-    parentId: number;
-    status: Status;
+    parentId: number = 0;
+    parentName: String = '';
+    status: Status = new Status();
     statusSort: string;
 
-    locale: Locale;
+    locale: Locale = new Locale();
     localeSort: string;
-    name: string;
-    addr1: string;
-    addr2: string;
-    city: string;
-    county: string;
-    postcode: string;
-    country: Country;
+    name: string = '';
+    addr1: string = '';
+    addr2: string = '';
+    city: string = '';
+    county: string = '';
+    postcode: string = '';
+    country: Country = new Country();
     countrySort: string;
     
-    mobile: string;
-    homeTel: string;
-    workTel: string;
+    mobile: string = '';
+    homeTel: string = '';
+    workTel: string = '';
 
-    binLevelAlert: number;
+    binLevelAlert: number = 0;
 
     lastLoggedIn: Date;
-    lastLoggedInStr: string;
+    lastLoggedInStr: string = '';
     lastActivity: Date;
-    lastActivityStr: string;
+    lastActivityStr: string = '';
 
     insertDate: Date;
-    insertDateStr: string;
-    insertBy: number;
+    insertDateStr: string = '';
+    insertBy: number = 0;
     modifiedDate: Date;
-    modifiedBy: number;
+    modifiedDateStr: string = '';
+    modifiedBy: number = 0;
   }

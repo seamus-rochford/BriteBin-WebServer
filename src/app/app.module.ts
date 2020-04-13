@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AuthService } from './auth.service';
@@ -28,6 +29,12 @@ import localeIE from '@angular/common/locales/en-IE';
 import localeHR from '@angular/common/locales/hr';
 import { MaterialModule } from './material/material.module';
 import { ConfirmationDialogComponent } from './components/shared/confirmation-dialog/confirmation-dialog.component';
+import { DialogsModule } from '@progress/kendo-angular-dialog';
+import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
+import { ButtonsModule } from '@progress/kendo-angular-buttons';
+import { UnitReadingsComponent } from './units/unit-readings/unit-readings.component';
+import { LatestReadingsComponent } from './latest-readings/latest-readings.component';
+import { MapComponent } from './map/map.component';
 
 registerLocaleData(localeIE, 'en-IE');
 registerLocaleData(localeHR, 'hr-HR');
@@ -44,7 +51,10 @@ registerLocaleData(localeHR, 'hr-HR');
     ResetPwdComponent,
     UnitsComponent,
     UnitComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    UnitReadingsComponent,
+    LatestReadingsComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule,
@@ -55,11 +65,15 @@ registerLocaleData(localeHR, 'hr-HR');
     AppRoutingModule,
     HttpClientModule,
     FontAwesomeModule,
-    NgbModule
+    NgbModule,
+    DialogsModule,
+    DateInputsModule,
+    ButtonsModule
   ],
   providers: [
     AuthService,
     AuthGuard,
+    DatePipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptorService,

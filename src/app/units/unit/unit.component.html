@@ -1,1 +1,132 @@
-<p>unit works!</p>
+<kendo-dialog *ngIf="displayWaitingDialog">
+    <img class="waitingDialog" src="../../../assets/images/loader_dark.gif" alt="../../../assets/images/loader.gif">
+</kendo-dialog>
+<div class="container" *ngIf="unit">
+    <div class="form-header row">
+        <div class="col-12" *ngIf="unit.id == 0">
+            <span><fa-icon [icon]="faBin"></fa-icon>&nbsp;&nbsp;Add Bin</span>
+        </div>
+        <div class="col-12" *ngIf="unit.id != 0">
+            <span><fa-icon [icon]="faBin"></fa-icon>&nbsp;&nbsp;Edit Bin - {{ unit.serialNo }}</span>
+        </div> 
+    </div>
+    <div class="spacer"></div>
+    <div class="row justify-content-end errorMessage" *ngIf="errorMsg !== ''">
+        <span><fa-icon [icon]="faExclamation"></fa-icon>&nbsp;&nbsp;{{ errorMsg }}</span>
+    </div>
+    <div class="row justify-content-md-center" *ngIf="unit.id == 0">
+        <div class="col-2"></div>
+        <div class="col-3"></div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label>Serial No.:</label>
+            <input type="hidden" [(ngModel)]="unit.id">
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="unit.serialNo" type="text" name="serialNo">
+        </div>
+        <div class="col-2">
+            <label>Owner</label>
+        </div>
+        <div class="col-3">
+            <select required [(ngModel)]="unit.owner" [compareWith]="compareById">
+                <option *ngFor="let owner of owners" [ngValue]="owner">
+                    {{ owner.name }}
+                </option>
+            </select>                             
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label>Location:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="unit.location" type="text">
+        </div>
+        <div class="col-2">
+            <label >Device Type</label>
+        </div>
+        <div class="col-3">
+            <select required [(ngModel)]="unit.deviceType" [compareWith]="compareById">
+                <option *ngFor="let deviceType of deviceTypes" [ngValue]="deviceType">
+                    {{ deviceType.name }}
+                </option>
+            </select>                             
+        </div>
+    </div>   
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label>Latitude:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="unit.latitude" type="text" class="latLongNumber">
+        </div>
+        <div class="col-2">
+            <label >Bin Type</label>
+        </div>
+        <div class="col-3">
+            <select required [(ngModel)]="unit.binType" [compareWith]="compareById">
+                <option *ngFor="let binType of binTypes" [ngValue]="binType">
+                    {{ binType.name }}
+                </option>
+            </select>                             
+        </div>
+    </div>   
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label >Longitude:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="unit.longitude" type="text" class="latLongNumber">
+        </div>
+        <div class="col-2">
+            <label >Content Type</label>
+        </div>
+        <div class="col-3">
+            <select required [(ngModel)]="unit.contentType" [compareWith]="compareById">
+                <option *ngFor="let contentType of contentTypes" [ngValue]="contentType">
+                    {{ contentType.name }}
+                </option>
+            </select>                             
+        </div>
+    </div>   
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label>Empty Level:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="unit.emptyLevel" type="number" *ngIf="!unit.useBinTypeLevel" class="simpleNumber">
+            <input [(ngModel)]="unit.binType.emptyLevel" type="number" *ngIf="unit.useBinTypeLevel" readonly class="simpleNumber disabled">
+            &nbsp;
+            <label for="useBinTypeLevel" class="alignLabel"><input type="checkbox" ng-checked="unit.useBinTypeLevel" [(ngModel)]="unit.useBinTypeLevel" id="useBinTypeLevel" class="checkbox alignCheckBox">  Use Bin Type Level</label>
+        </div>
+        <div class="col-2">
+            <label>Last Activity:</label>
+        </div>
+        <div class="col-3">
+            <input [ngModel]="unit.lastActivityStr" type="text" readonly style="background-color:lightgrey;">          
+        </div>
+    </div> 
+
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="row justify-content-md-center">
+        <div class="col-3 text-center">
+            <button type="button" class="btn btn-primary " (click)="onBack()">
+                <fa-icon [icon]="faClose"></fa-icon> Close
+            </button>
+        </div>
+        <div class="col-3 text-center">
+            <button type="button" class="btn btn-primary" (click)="onReadings()">
+                <fa-icon [icon]="faList"></fa-icon> Readings
+            </button>
+        </div>
+        <div class="col-3 text-center">
+            <button type="button" class="btn btn-primary" (click)="onSave()">
+                <fa-icon [icon]="faSave"></fa-icon> Save
+            </button>
+        </div>
+    </div>
+    <div class="spacer"></div>
+</div>

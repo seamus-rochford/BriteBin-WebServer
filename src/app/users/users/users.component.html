@@ -1,12 +1,15 @@
+<kendo-dialog *ngIf="displayWaitingDialog">
+    <img class="waitingDialog" src="../../../assets/images/loader_dark.gif" alt="../../../assets/images/loader.gif">
+</kendo-dialog>
 <div class="container-fluid">
     <div class="spacer"></div>
     <div class="form-header">
-        Users
+        List Users
     </div>
     <div class="spacer"></div>
     <div class="row no-gutters">
         <div class="col text-right">
-            <input [(ngModel)]="userSearchStr" type="text" size="100" placeholder=" Search by any field ..." (keyup)="doSearch()">&nbsp;
+            <input [(ngModel)]="userSearchStr" type="text" size="200" placeholder=" Search by any field ..." (keyup)="doSearch()">&nbsp;
             <button type="button" class="btn btn-primary" name="btnSearch" (click)="doSearch()"><fa-icon [icon]="faSearch"></fa-icon> Search</button>
         </div>
     </div>
@@ -15,8 +18,8 @@
         <table class="table table-striped table-bordered">
             <thead class="table-header">
                 <tr>
-                    <th>
-                        <input type="checkbox" id="allCheckbox" name="allCheckbox">
+                    <th style="text-align: center;">
+                        <input type="checkbox" id="allCheckbox" name="allCheckbox" class="checkbox">
                     </th>
                     <th scope="col" (click)="sortByStatus()">Status</th>
                     <th scope="col" (click)="sortByEmail()">Email</th>
@@ -32,49 +35,54 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-body">
+                <!---->
                 <tr *ngFor="let user of users; let i = index" >
-                    <td>
-                        <input type="checkbox" id={{user.id}} value={{user.id}} name="checkbox">
+                    <td style="text-align: center;">
+                        <input type="checkbox" id={{user.id}} value={{user.id}} name="checkbox" class="checkbox">
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.status.name }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.email }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.role.name }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.name }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.addr1 }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.addr2 }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.city }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.county }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.country.name }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.locale.name }}
                     </td>
-                    <td>
+                    <td (click)="editUser(user.id)">
                         {{ user.insertDateStr }}
                     </td>
                     <td *ngIf="user.status.id !== -1" style="text-align: center;padding:0rem;">
-                        <fa-icon [icon]="faToggleOn" class="fa-2x" style="color: green;"></fa-icon>
+                        <button mat-button (click)="openDialogDeactivate(user.id)">
+                            <fa-icon [icon]="faToggleOn" class="fa-2x" style="color: green;"></fa-icon>
+                        </button>
                     </td>
                     <td *ngIf="user.status.id === -1" style="text-align: center;padding:0rem;" >
-                        <fa-icon [icon]="faToggleOff" class="fa-2x" style="color: red;"></fa-icon>
+                        <button mat-button (click)="openDialogReactivate(user.id)">
+                            <fa-icon [icon]="faToggleOff" class="fa-2x" style="color: red;"></fa-icon>
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -82,12 +90,16 @@
         <div class="spacer"></div>
         <div class="row nogutters">
             <div class="col">
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" (click)="onBack()">
+                    <fa-icon [icon]="faBack"></fa-icon> Back
+                </button>
+                &nbsp;
+                <button type="button" class="btn btn-primary" (click)="editUser(0)">
                     <fa-icon [icon]="faUserPlus"></fa-icon> Add User
                 </button>
             </div>        
             <div class="col text-right">
-                <button type="button" class="btn btn-primary"><fa-icon [icon]="faFilePdf" class="fa-1x"></fa-icon> PDF Export</button>
+                <button type="button" class="btn btn-primary"><fa-icon [icon]="faFilePdf" class="fa-1x"></fa-icon>   PDF Export</button>
                 &nbsp;
                 <button type="button" class="btn btn-primary"><fa-icon [icon]="faFileExcel"></fa-icon> Excel Export</button>
             </div>
