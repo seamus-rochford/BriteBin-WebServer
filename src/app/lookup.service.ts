@@ -12,6 +12,14 @@ export class LookupService {
   constructor(private httpClient: HttpClient) { }
 
 
+  // GET binLevels
+  getBinLevels() {
+    const url = `${this.lookupUrl}/getBinLevels`;
+    console.log('Get binLevels Url: ' + url);
+    return this.httpClient.get(url).toPromise();
+  }
+
+
   // GET binTypes
   getBinTypes() {
     const url = `${this.lookupUrl}/getBinTypes`;

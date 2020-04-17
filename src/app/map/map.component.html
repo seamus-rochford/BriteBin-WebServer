@@ -3,7 +3,57 @@
         <div #mapContainer id="map"></div>
     </div>
     <div class="col-3">
-        Filters
+        <div class="row no-gutters" style="width:100%">
+            Content Type
+        </div>
+        <div class="row no-gutters">
+            <ul>
+                <li *ngFor="let contentType of mapSearch.contentTypes">
+                    <input type="checkbox" [(ngModel)]="contentType.selected" id="contentType.id" class="checkbox alignCheckBox" (change)="onFilterChange()" >  {{ contentType.name }}
+                </li>
+            </ul>
+        </div>
+        <div class="row no-gutters" style="width:100%">
+            Bin Type
+        </div>
+        <div class="row no-gutters">
+            <ul>
+                <li *ngFor="let binType of mapSearch.binTypes">
+                    <input type="checkbox" [(ngModel)]="binType.selected" id="binType.id" class="checkbox alignCheckBox" (change)="onFilterChange()">  {{ binType.name }}
+                </li>
+            </ul>
+        </div>
+        <div class="row no-gutters" style="width:100%">
+            Device Type
+        </div>
+        <div class="row no-gutters">
+            <ul>
+                <li *ngFor="let deviceType of mapSearch.deviceTypes">
+                    <input type="checkbox" [(ngModel)]="deviceType.selected" id="deviceType.id" class="checkbox alignCheckBox"(change)="onFilterChange()">  {{ deviceType.name }}
+                </li>
+            </ul>
+        </div>
+        <div class="row no-gutters" style="width:100%">
+            Bin Owners
+        </div>
+        <div class="row no-gutters">
+            <ul class="ulOwner">
+                <li *ngFor="let owner of mapSearch.owners">
+                    <input type="checkbox" [(ngModel)]="owner.selected" id="owner.id" class="checkbox alignCheckBox" (change)="onFilterChange()">  {{ owner.name }}
+                </li>
+            </ul>
+        </div>
+        <div class="row no-gutters" style="width:100%">
+            Bin Levels
+        </div>
+        <div class="row no-gutters">
+            <ul>
+                <li *ngFor="let binLevel of mapSearch.binLevels">
+                    <input type="checkbox" [(ngModel)]="binLevel.selected" id="binLevel.id" class="checkbox alignCheckBox" (change)="onFilterChange()">  {{ binLevel.name }} 
+                        <fa-icon [icon]="faBin" [styles]="{'color': '#da291c'}" *ngIf="binLevel.id == 0"></fa-icon>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 

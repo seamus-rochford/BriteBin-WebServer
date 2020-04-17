@@ -1,17 +1,31 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 
 import { UnitService } from 'src/app/unit.service';
 import { AuthService } from 'src/app/auth.service';
+import { UserService } from 'src/app/user.service';
+import { LookupService } from '../lookup.service';
 
 import { Reading } from 'src/app/model/reading';
 import { ReadingsSearch } from 'src/app/model/readings_search';
 import { Locale } from '../model/locale';
+import { User } from '../model/user';
+import { DeviceType } from '../model/device_type';
+import { BinType } from '../model/bin_type';
+import { ContentType } from '../model/content_type';
+import { BinLevel } from '../model/bin_level';
+
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { reduce } from 'rxjs/operators';
 
 declare var $: any; // jQuery
 
 const clone = obj => JSON.parse(JSON.stringify(obj));
+
+const BIN_LEVEL_EMPTY_ID = 0;
+const BIN_LEVEL_BETWEEN_ID = 1;
+const BIN_LEVEL_FULL_ID = 2;
 
 @Component({
   selector: 'app-map',
@@ -20,19 +34,21 @@ const clone = obj => JSON.parse(JSON.stringify(obj));
   providers: [DatePipe]
 })
 
-export class MapComponent implements OnInit, AfterViewInit {
+export class MapComponent implements OnInit {
 
   @ViewChild('mapContainer', {static: false}) gmap: ElementRef;
 
   map: google.maps.Map;
-
   mapBounds: google.maps.LatLngBounds;
+  mapMarkers: google.maps.Marker[];
+
+  faBin = faTrashAlt;
 
   // Locale of logged in user
   locale: Locale;
 
-  readingsSearchStr: '';
-  readingsSearch: ReadingsSearch;
+  mapSearchStr: '';
+  mapSearch: ReadingsSearch;
 
   allReadings: Reading[];   // stores all readings
   readings: Reading[];      // stores all readings filtered by screen filters
@@ -41,6 +57,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   constructor(
     private unitService: UnitService,
     private authService: AuthService,
+    private userService: UserService,
+    private lookupService: LookupService,
     public router: Router    
 
   ) { }
@@ -50,11 +68,56 @@ export class MapComponent implements OnInit, AfterViewInit {
   
     this.locale = this.authService.getLocale();
 
-    this.getLatestReadings();
+    this.mapSearch = new ReadingsSearch();
+    this.mapSearch.searchStr = [];
 
-    this.readingsSearch = new ReadingsSearch();
-    this.readingsSearch.searchStr = [];      
+    Promise.all([
+      this.getOwners(),
+      this.getDeviceTypes(),
+      this.getBinTypes(),
+      this.getBinLevels(),
+      this.getContentTypes()
+    ]).then(values =>{
+      this.getLatestReadings();
+
+      this.defaultAllSelected(this.mapSearch.deviceTypes);
+      this.defaultAllSelected(this.mapSearch.binTypes);
+      this.defaultAllSelected(this.mapSearch.binLevels);
+      this.defaultAllSelected(this.mapSearch.contentTypes);
+      this.defaultAllSelected(this.mapSearch.owners);
+    });    
   } 
+
+  defaultAllSelected (objArray: any) {
+    for (let i = 0; i < objArray.length; i++) {
+      objArray[i].selected = true;
+    }
+  }
+
+  async getDeviceTypes() {
+    this.mapSearch.deviceTypes = (await (this.lookupService.getDeviceTypes())) as DeviceType[];
+  }
+
+  async getBinTypes() {
+    this.mapSearch.binTypes = (await (this.lookupService.getBinTypes())) as BinType[];
+  }
+
+  async getBinLevels() {
+    this.mapSearch.binLevels = (await (this.lookupService.getBinLevels())) as BinLevel[];
+  }
+
+  async getContentTypes() {
+    this.mapSearch.contentTypes = (await (this.lookupService.getContentTypes())) as ContentType[];
+  }
+
+  async getOwners() {
+    this.userService.getUsers()
+      .subscribe(users => {
+        console.log('Back from getUsers API: ');
+
+        this.mapSearch.owners = clone(users);
+      });      
+  }
 
   getLatestReadings(): void {
     this.unitService.getLatestReadings().subscribe(
@@ -92,6 +155,24 @@ export class MapComponent implements OnInit, AfterViewInit {
       reading.contentTypeSort = reading.unit.contentType.name;
 
       reading.readingDateTimeStr = this.formatDate(reading.readingDateTime);
+
+      let emptyLevel = 0;
+      let fullLevel = 0;
+      if (reading.unit.useBinTypeLevel) {
+        emptyLevel = reading.unit.binType.emptyLevel;
+        fullLevel = reading.unit.binType.fullLevel;
+      } else {
+        emptyLevel = reading.unit.emptyLevel;
+        fullLevel = reading.unit.fullLevel;
+      }
+      if (reading.binLevel < emptyLevel) {
+        reading.binLevelType = BIN_LEVEL_EMPTY_ID;
+      } else if (reading.binLevel >= fullLevel) {
+        reading.binLevelType = BIN_LEVEL_FULL_ID;
+      } else {
+        reading.binLevelType = BIN_LEVEL_BETWEEN_ID;
+      }
+
     });
 
     console.log('setReadingValues - end');
@@ -105,6 +186,73 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     // this.displayWaitingDialog = false;
     return filteredProperties;
+  }
+
+  private filter() {
+    this.readings = [];
+
+    const tempReadings = [];
+
+    this.allReadings.forEach((readingObject: Reading, rowIndex: number) => {
+      // console.log(readingObject);
+
+      // If readingObject is null, undefined or empty - ignore
+      if (readingObject != null && Object.keys(readingObject).length !== 0) {
+
+        let includeReading = true;
+
+        if (this.mapSearch.searchStr.length > 0) {
+          // Check Status, email, role, name, addr1, addr2, city, county, country, locale
+          // against any part of the search string
+          this.mapSearch.searchStr.forEach((searchSubStr) => {
+            includeReading = includeReading
+              && ((readingObject.unit.location.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.unit.binType.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.unit.contentType.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.readingDateTimeStr.indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.binLevel.toString().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.binLevelBC.toString().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.noFlapOpenings.toString().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.batteryVoltage.toString().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.temperature.toString().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.noCompactions.toString().indexOf(searchSubStr.toUpperCase()) !== -1)
+              );
+          });
+        }
+
+        for (let i = 0; i < this.mapSearch.contentTypes.length; i++) {
+          if (readingObject.unit.contentType.id === this.mapSearch.contentTypes[i].id)
+            includeReading = includeReading && this.mapSearch.contentTypes[i].selected;
+        }
+
+        for (let i = 0; i < this.mapSearch.binTypes.length; i++) {
+          if (readingObject.unit.binType.id === this.mapSearch.binTypes[i].id)
+            includeReading = includeReading && this.mapSearch.binTypes[i].selected;
+        }
+
+        for (let i = 0; i < this.mapSearch.deviceTypes.length; i++) {
+          if (readingObject.unit.deviceType.id === this.mapSearch.deviceTypes[i].id)
+            includeReading = includeReading && this.mapSearch.deviceTypes[i].selected;
+        }
+
+        for (let i = 0; i < this.mapSearch.owners.length; i++) {
+          if (readingObject.unit.owner.id === this.mapSearch.owners[i].id)
+            includeReading = includeReading && this.mapSearch.owners[i].selected;
+        }
+
+        for (let i = 0; i < this.mapSearch.binLevels.length; i++) {
+          if (readingObject.binLevelType === this.mapSearch.binLevels[i].id)
+            includeReading = includeReading && this.mapSearch.binLevels[i].selected;
+        }
+
+        // console.log('includeUnit: ' + includeUnit);
+        if (includeReading) {
+          tempReadings.push(readingObject);
+        }
+      }
+    });
+
+    this.readings = tempReadings;
   }
 
   getBoundsZoomLevel(bounds, mapDim) {
@@ -161,15 +309,40 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   loadAllMarkers(readings): void {
-    console.log('loadAllMarkers');
-    readings.forEach( reading => {
+    // console.log('loadAllMarkers');
+    this.mapMarkers = [];
+    readings.forEach( (reading, index) => {
 
-      console.log('Location: ' + reading.unit.location);
+      console.log('DeviceType: ' + reading.unit.contentType.name);
+
+      // icon color
+      let binColor = '';
+      if (reading.binLevelType === BIN_LEVEL_EMPTY_ID) {
+        binColor = '#2b8f17';
+      } else if (reading.binLevelType === BIN_LEVEL_FULL_ID) {
+        binColor = '#da291c';
+      } else {
+        binColor = '#fc8804';
+      }
       // Create marker
       const marker = new google.maps.Marker({
           position: new google.maps.LatLng(reading.unit.latitude, reading.unit.longitude),
           map: this.map,
-          title: reading.unit.location + " - " + reading.binLevel + '\n(' + reading.unit.latitude + ', ' + reading.unit.longitude + ')'
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            fillColor: '#AAA',
+            fillOpacity: 0.5,
+            strokeWeight: 0,
+            scale: 12
+          },          
+          label: { 
+            fontFamily: 'FontAwesome',
+            text: '\uf1f8',
+            color: binColor,
+            fontSize: '24px',
+            fontWeight: '400'
+          },
+          title: "Location: " + reading.unit.location + "\nBin Level: " + reading.binLevel + "\nContent: " + reading.unit.contentType.name
       });
 
       // Create Info window
@@ -182,8 +355,9 @@ export class MapComponent implements OnInit, AfterViewInit {
         infoWindow.open(marker.getMap(), marker);
       });
 
+      this.mapMarkers.push(marker);
       // Add marker to map
-      marker.setMap(this.map);
+      this.mapMarkers[index].setMap(this.map);
     });
   }
 
@@ -216,8 +390,21 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.loadAllMarkers(readings);
   }
 
-  ngAfterViewInit() {
-    // this.mapInitializer();
+  refreshMapMarkers() {
+
+    // Clear the markers
+    for (let i = 0; i < this.mapMarkers.length; i++) {
+      this.mapMarkers[i].setMap(null);
+    }
+
+    this.loadAllMarkers(this.readings);
+  }
+
+  onFilterChange() {
+    console.log('Content Type Changed');
+
+    this.filter();
+    this.refreshMapMarkers();
   }
 
 }

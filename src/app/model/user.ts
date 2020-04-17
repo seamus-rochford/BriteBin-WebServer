@@ -44,4 +44,7 @@ export class User {
     modifiedDate: Date;
     modifiedDateStr: string = '';
     modifiedBy: number = 0;
+
+    selected: boolean = true;  // only used in mapSearch
+
   }

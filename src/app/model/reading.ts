@@ -35,4 +35,6 @@ export class Reading {
 
     readingDateTime: Date;
     readingDateTimeStr: string = '';    
+
+    binLevelType: number;  // 0 = Empty, 1 = In between, 2 = full
 }

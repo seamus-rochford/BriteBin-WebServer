@@ -18,6 +18,7 @@ export class Unit {
     contentTypeSort: string;
     useBinTypeLevel: boolean = true;
     emptyLevel: number = 0;
+    fullLevel: number = 0;
     emptyLevelSort: number = 0;
 
     lastActivity: Date;
