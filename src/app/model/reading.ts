@@ -8,8 +8,11 @@ export class Reading {
     contentTypeSort: string;
     rawDataId: number;
     msgType: number;
+
     binLevel: number;
+    binLevelPercent: number;
     binLevelBC: number;
+    binLevelBCPercent: number;
     noFlapOpenings: number;
     batteryVoltage: number;
     temperature: number;
@@ -26,8 +29,12 @@ export class Reading {
     flapStuckOpen: boolean;
 
     nbiotSignalStrength: number;
+
+    // tekelek sensor system values
     rssi: number;
     src: number;
+
+    // Pel bin sensor system values
     snr: number;
     ber: number;
     rsrq: number;

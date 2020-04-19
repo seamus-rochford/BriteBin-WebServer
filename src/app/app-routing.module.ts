@@ -16,7 +16,8 @@ import { MapComponent } from './map/map.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'resetPwd', component: ResetPwdComponent },
+  { path: 'default', component: LatestReadingsComponent, canActivate: [AuthGuard] },
+  { path: 'resetPwd/:id', component: ResetPwdComponent, canActivate: [AuthGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
   { path: 'user/:id', component: UserComponent, canActivate: [AuthGuard] },

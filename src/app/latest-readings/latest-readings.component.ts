@@ -124,6 +124,12 @@ export class LatestReadingsComponent implements OnInit {
       reading.binTypeSort = reading.unit.binType.name;
       reading.contentTypeSort = reading.unit.contentType.name;
 
+      if (reading.unit.reading40percent - reading.unit.reading100percent > 0) {
+        // don't allow divide by zero
+        reading.binLevelPercent = Math.round(100 - (reading.binLevel - reading.unit.reading100percent) / (reading.unit.reading40percent - reading.unit.reading100percent) * 60);
+        reading.binLevelBCPercent = Math.round(100 - (reading.binLevelBC - reading.unit.reading100percent) / (reading.unit.reading40percent - reading.unit.reading100percent) * 60);
+      }
+      
       reading.readingDateTimeStr = this.formatDate(reading.readingDateTime);
     });
 

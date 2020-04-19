@@ -53,22 +53,26 @@
                     <td style="text-align: center;">
                         <input type="checkbox" id={{reading.id}} value={{reading.id}} name="select-checkbox" class="checkbox">
                     </td>
-                    <td >
-                        {{ reading.binLevel }}
+                    <td>
+                        {{ reading.binLevelPercent }} %
                     </td>
-                    <td >
-                        {{ reading.binLevelBC }}
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
+                        {{ reading.binLevelBCPercent }} %
                     </td>
-                    <td >
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.noFlapOpenings }}
                     </td>
-                    <td >
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.batteryVoltage }}
                     </td>
-                    <td >
+                    <td>
                         {{ reading.temperature }}
                     </td>
-                    <td >
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.noCompactions }}
                     </td>
                     <td  title="Battery UVLO">

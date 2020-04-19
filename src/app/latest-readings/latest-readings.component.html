@@ -62,22 +62,26 @@
                     <td (click)="editUnit(reading.unit.id)">
                         {{ reading.unit.contentType.name }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
-                        {{ reading.binLevel }}
+                    <td>
+                        {{ reading.binLevelPercent }} %
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
-                        {{ reading.binLevelBC }}
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
+                        {{ reading.binLevelBCPercent }} %
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.noFlapOpenings }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.batteryVoltage }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td>
                         {{ reading.temperature }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.noCompactions }}
                     </td>
                     <td (click)="unitReading(reading.unit.id)" title="Battery UVLO">

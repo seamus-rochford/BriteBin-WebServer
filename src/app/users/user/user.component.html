@@ -182,6 +182,11 @@
                 <fa-icon [icon]="faClose"></fa-icon> Close
             </button>
         </div>
+        <div class="col-3" *ngIf="user.id !== 0">
+            <button type="button" class="btn btn-primary " (click)="onResetPassword()">
+                <fa-icon [icon]="faEye"></fa-icon> Reset Password
+            </button>
+        </div>
         <div class="col-3 text-right">
             <button type="button" class="btn btn-primary" (click)="onSave()">
                 <fa-icon [icon]="faSave"></fa-icon> Save

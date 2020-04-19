@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DatePipe, Location } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { User } from 'src/app/model/user';
 import { UserService }  from 'src/app/user.service';
@@ -9,13 +10,13 @@ import { Role } from 'src/app/model/role';
 import { Status } from 'src/app/model/status';
 import { Locale } from 'src/app/model/locale';
 import { Country } from 'src/app/model/country';
-import { ActivatedRoute } from '@angular/router';
 
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { faExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
 
 const clone = obj => JSON.parse(JSON.stringify(obj));
 
@@ -32,6 +33,7 @@ export class UserComponent implements OnInit {
   faBack = faAngleLeft;
   faSave = faSave;
   faExclamation = faExclamation;
+  faEye = faEye;
 
   roles: Role[];
   status: Status[];
@@ -49,11 +51,12 @@ export class UserComponent implements OnInit {
   displayWaitingDialog = true;
 
   constructor(
-    private route:ActivatedRoute,
+    private route: ActivatedRoute,
     private lookupService: LookupService,
     private userService: UserService,
     private authService: AuthService,
-    private location: Location
+    private location: Location,
+    public router: Router
   ) { }
 
   ngOnInit(): void {
@@ -174,9 +177,7 @@ export class UserComponent implements OnInit {
     const pipe = new DatePipe(this.locale);
 
     const dateStr = pipe.transform(date, 'short');
-    // Format the date to DD/MM/YYYY
-    // const dateStr = date.substr(8, 2) + '/' + date.substr(5, 2) + '/' + date.substr(0, 4) + " " + date.substr(11, 2) + ":" + date.substr(14, 2) + ":" + date.substr(17, 2);
-    // alert('Date Before: ' + date + '   Date String: ' + dateStr);
+
     return dateStr;
   }
 
@@ -210,11 +211,6 @@ export class UserComponent implements OnInit {
     this.displayWaitingDialog = false;
     return user;
   }
-
-  // save(user: User) {
-  //   this.userService.saveUser(this.user)
-  //     .subscribe(user => user);
-  // }	
 
   validate() {
     if (this.user.id == 0) {
@@ -285,6 +281,12 @@ export class UserComponent implements OnInit {
     }
   }
 
+
+  onResetPassword() {
+    // Reset user password
+    // this.router.navigate(['/reset', { id: this.user.id }]);
+    this.router.navigateByUrl('resetPwd/' + this.user.id);    
+  }
 
 	onBack(): void {
     console.log('Clicked back');

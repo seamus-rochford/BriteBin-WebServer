@@ -27,7 +27,8 @@ export class HeaderComponent implements OnInit {
       console.log('Display Name: ' + this.displayName);
 
       console.log(this.currUser);
-    }  }
+    }  
+  }
 
   logout() {
     this.displayName = '';

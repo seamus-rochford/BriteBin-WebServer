@@ -111,4 +111,16 @@ export class UserService {
     return this.httpClient.post(url, user, httpOptions);
   }
 
+  changePassword(user: User) {
+    const url = `${this.userUrl}/changePassword?userId=` + user.id + `&oldPassword=` + user.password + `&newPassword=` + user.newPassword + `&confirmPassword=` + user.confirmPassword;
+    console.log('changePassword Url: ' + url);
+    return this.httpClient.get(url);
+  }
+
+  resetPassword(user: User) {
+    const url = `${this.userUrl}/resetPassword?userId=` + user.id + `&newPassword=` + user.newPassword + `&confirmPassword=` + user.confirmPassword;
+    console.log('resetPassword Url: ' + url);
+    return this.httpClient.get(url);
+  }
+
 }
