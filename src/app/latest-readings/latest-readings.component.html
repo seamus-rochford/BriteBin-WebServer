@@ -22,30 +22,74 @@
                         <input type="checkbox" id="allCheckbox" name="allCheckbox" class="checkbox">
                     </th>
                     <th scope="col" (click)="sortByLocation()">Location</th>
-                    <th scope="col" (click)="sortByBinType()">Type</th>
+                    <th scope="col" (click)="sortByBinType()">Model</th>
+                    <th scope="col" (click)="sortByDeviceType()">Type</th>
                     <th scope="col" (click)="sortByContentType()">Content</th>
+                    <th scope="col"><fa-icon [icon]="faBinAlt"></fa-icon></th>
                     <th scope="col" (click)="sortByBinLevel()">Bin Level</th>
                     <th scope="col" (click)="sortByBinLevelBC()">Level B.C.</th>
                     <th scope="col" (click)="sortByNoFlapOpenings()">No. Flap Openings</th>
                     <th scope="col" (click)="sortByBatteryVoltage()">Batt. Vol.</th>
                     <th scope="col" (click)="sortByTemperature()">Temp. (C)</th>
                     <th scope="col" (click)="sortByNoCompactions()">No. Comp.</th>
-                    <th scope="col" title="Battery UVLO">F1</th>
-                    <th scope="col" title="Emptied Last Period">F2</th>
-                    <th scope="col" title="Battery Over TempLO">F3</th>
-                    <th scope="col" title="Bin Locked">F4</th>
-                    <th scope="col" title="Bin Full">F5</th>
-                    <th scope="col" title="Bin Tilted">F6</th>
-                    <th scope="col" title="Service Door Open">F7</th>
-                    <th scope="col" title="Flap Stuck Open">F8</th>
+                    <th scope="col" title="Battery UVLO">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="1" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>                        
+                    </th>
+                    <th scope="col" title="Emptied Last Period">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="2" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>
+                    </th>
+                    <th scope="col" title="Battery Over TempLO">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="3" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>
+                    </th>
+                    <th scope="col" title="Bin Locked">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="4" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>
+                    </th>
+                    <th scope="col" title="Bin Full">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="5" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>
+                    </th>
+                    <th scope="col" title="Bin Tilted">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="6" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>
+                    </th>
+                    <th scope="col" title="Service Door Open">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="7" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>
+                    </th>
+                    <th scope="col" title="Flap Stuck Open">
+                        <fa-layers>
+                            <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                            <fa-layers-text content="8" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                        </fa-layers>
+                    </th>
                     <th scope="col" (click)="sortByReadingTime()">Reading Time</th>
-                    <th scope="col" (click)="sortByMsgType()">Msg. Type</th>
-                    <th scope="col" (click)="sortByRssi()">RSSI</th>
-                    <th scope="col" (click)="sortBySrc()">SRC</th>
-                    <th scope="col" (click)="sortBySnr()">SNR</th>
-                    <th scope="col" (click)="sortByBer()">BER</th>
-                    <th scope="col" (click)="sortByRsrq()">RSRQ</th>
-                    <th scope="col" (click)="sortByRsrp()">RSRP</th>
+                    <th scope="col" (click)="sortByMsgType()" *ngIf="displaySystemColumns">Msg. Type</th>
+                    <th scope="col" (click)="sortByBinLevel()" *ngIf="displaySystemColumns">Bin Level</th>
+                    <th scope="col" (click)="sortByBinLevelBC()" *ngIf="displaySystemColumns">Level B.C.</th>
+                    <th scope="col" (click)="sortByRssi()" *ngIf="displaySystemColumns">RSSI</th>
+                    <th scope="col" (click)="sortBySrc()" *ngIf="displaySystemColumns">SRC</th>
+                    <th scope="col" (click)="sortBySnr()" *ngIf="displaySystemColumns">SNR</th>
+                    <th scope="col" (click)="sortByBer()" *ngIf="displaySystemColumns">BER</th>
+                    <th scope="col" (click)="sortByRsrq()" *ngIf="displaySystemColumns">RSRQ</th>
+                    <th scope="col" (click)="sortByRsrp()" *ngIf="displaySystemColumns">RSRP</th>
                 </tr>
             </thead>
             <tbody class="table-body">
@@ -60,28 +104,36 @@
                         {{ reading.unit.binType.name }}
                     </td>
                     <td (click)="editUnit(reading.unit.id)">
+                        {{ reading.unit.deviceType.name }}
+                    </td>
+                    <td (click)="editUnit(reading.unit.id)">
                         {{ reading.unit.contentType.name }}
                     </td>
-                    <td>
-                        {{ reading.binLevelPercent }} %
+                    <td (click)="editUnit(reading.unit.id)" style="padding-left: 5px; padding-right: 5px;">
+                        <fa-icon [icon]="faBinAlt" [styles]="{'color': '#2b8f17'}" *ngIf="reading.binLevelStatus === 1"></fa-icon>
+                        <fa-icon [icon]="faBinAlt" [styles]="{'color': '#fc8804'}" *ngIf="reading.binLevelStatus === 2"></fa-icon>
+                        <fa-icon [icon]="faBinAlt" [styles]="{'color': '#da291c'}" *ngIf="reading.binLevelStatus === 3"></fa-icon>
                     </td>
-                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
-                    <td *ngIf="reading.unit.deviceType.id === 2">
+                    <td (click)="unitReading(reading.unit.id)">
+                        {{ reading.binLevelPercent }} % ({{ reading.binLevelStatus }}) ({{ reading.binLevel }})
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.binLevelBCPercent }} %
                     </td>
-                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
-                    <td *ngIf="reading.unit.deviceType.id === 2">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.noFlapOpenings }}
                     </td>
-                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
-                    <td *ngIf="reading.unit.deviceType.id === 2">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.batteryVoltage }}
                     </td>
-                    <td>
+                    <td (click)="unitReading(reading.unit.id)">
                         {{ reading.temperature }}
                     </td>
-                    <td *ngIf="reading.unit.deviceType.id === 1">-</td>
-                    <td *ngIf="reading.unit.deviceType.id === 2">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 1">-</td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="reading.unit.deviceType.id === 2">
                         {{ reading.noCompactions }}
                     </td>
                     <td (click)="unitReading(reading.unit.id)" title="Battery UVLO">
@@ -111,25 +163,32 @@
                     <td (click)="unitReading(reading.unit.id)">
                         {{ reading.readingDateTimeStr }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
-                        {{ reading.messageType }}
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
+                        {{ reading.msgType }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
+                        {{ reading.binLevel }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns && reading.unit.deviceType.id === 1">-</td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns && reading.unit.deviceType.id === 2">
+                        {{ reading.binLevelBC }}
+                    </td>
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
                         {{ reading.rssi }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
                         {{ reading.src }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
                         {{ reading.snr }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
                         {{ reading.ber }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
                         {{ reading.rsrq }}
                     </td>
-                    <td (click)="unitReading(reading.unit.id)">
+                    <td (click)="unitReading(reading.unit.id)" *ngIf="displaySystemColumns">
                         {{ reading.rsrp }}
                     </td>
                 </tr>

@@ -29,6 +29,7 @@
                     <th scope="col" (click)="sortByBinType()">Bin Type</th>
                     <th scope="col" (click)="sortByContentType()">Content Type</th>
                     <th scope="col" (click)="sortByEmptyLevel()">Empty Level</th>
+                    <th scope="col" (click)="sortByFullLevel()">Full Level</th>
                     <th scope="col" (click)="sortByLastActivity()">Last Activity</th>
                     <th scope="col" (click)="sortByCreated()">Created</th>
                 </tr>
@@ -64,6 +65,12 @@
                     </td>
                     <td (click)="editUnit(unit.id)" *ngIf="!unit.useBinTypeLevel">
                         {{ unit.emptyLevel }}
+                    </td>
+                    <td (click)="editUnit(unit.id)" *ngIf="unit.useBinTypeLevel">
+                        {{ unit.binType.fullLevel }}* 
+                    </td>
+                    <td (click)="editUnit(unit.id)" *ngIf="!unit.useBinTypeLevel">
+                        {{ unit.fullLevel }}
                     </td>
                     <td (click)="editUnit(unit.id)">
                         {{ unit.lastActivityStr }}

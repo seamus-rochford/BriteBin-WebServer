@@ -10,14 +10,17 @@ import { User } from 'src/app/model/user';
 import { Unit } from 'src/app/model/unit';
 import { Reading } from 'src/app/model/reading';
 import { ReadingsSearch } from 'src/app/model/readings_search';
+import { Global } from 'src/app/model/global';
 
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { faList } from '@fortawesome/free-solid-svg-icons';
 import { faShare } from '@fortawesome/free-solid-svg-icons';
+import { faFlag } from '@fortawesome/free-solid-svg-icons';
 
 declare var $: any; // jQuery
 
@@ -39,11 +42,13 @@ export class UnitReadingsComponent implements OnInit {
   // fontawesome icons
   faSearch = faSearch;
   faBin = faTrash;
+  faBinAlt = faTrashAlt;
   faBack = faAngleLeft;
   faFilePdf = faFilePdf;
   faFileExcel = faFileExcel;
   faList = faList;
   faPull = faShare;
+  faFlag = faFlag;
 
   locale: string;
   loggedInUser: User;
@@ -67,6 +72,8 @@ export class UnitReadingsComponent implements OnInit {
   sortOrderRsrp = 0;
   sortOrderReadingTime = 0;
 
+  displaySystemColumns = false;
+
   displayWaitingDialog = true;
   
   constructor(
@@ -74,7 +81,8 @@ export class UnitReadingsComponent implements OnInit {
     private authService: AuthService,
     private unitService: UnitService,
     private location: Location,
-    public router: Router
+    public router: Router,
+    public global: Global
   ) { }
 
   ngOnInit(): void {
@@ -98,6 +106,10 @@ export class UnitReadingsComponent implements OnInit {
 
     this.readingsSearch = new ReadingsSearch();
     this.readingsSearch.searchStr = [];      
+
+    if (this.loggedInUser.role.id == this.global.userRoles.ADMIN) {
+      this.displaySystemColumns = true;
+    }
   }
 
 	async getUnit(id) {
@@ -150,12 +162,6 @@ export class UnitReadingsComponent implements OnInit {
     console.log('setUnitValues - start');
     filteredProperties.forEach(reading => {
       console.log('Reading: ', { reading });
-
-      if (reading.unit.reading40percent - reading.unit.reading100percent > 0) {
-        // don't allow divide by zero
-        reading.binLevelPercent = Math.round(100 - (reading.binLevel - reading.unit.reading100percent) / (reading.unit.reading40percent - reading.unit.reading100percent) * 60);
-        reading.binLevelBCPercent = Math.round(100 - (reading.binLevelBC - reading.unit.reading100percent) / (reading.unit.reading40percent - reading.unit.reading100percent) * 60);
-      }
 
       reading.readingDateTimeStr = this.formatDate(reading.readingDateTime);
     });

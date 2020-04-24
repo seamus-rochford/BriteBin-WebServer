@@ -241,7 +241,7 @@ export class UserComponent implements OnInit {
       this.errorMsg = "Must select a country";
       return false;
     }
-    if (this.user.role.id == null || this.user.role.id == 0) {
+    if (this.user.role.id == null || this.user.role.id < 0) {
       this.errorMsg = "Must select a role";
       return false;
     }

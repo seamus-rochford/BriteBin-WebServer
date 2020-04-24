@@ -108,6 +108,19 @@
             <input [ngModel]="unit.lastActivityStr" type="text" readonly style="background-color:lightgrey;">          
         </div>
     </div> 
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label>Full Level:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="unit.fullLevel" type="number" *ngIf="!unit.useBinTypeLevel" class="simpleNumber">
+            <input [(ngModel)]="unit.binType.fullLevel" type="number" *ngIf="unit.useBinTypeLevel" readonly class="simpleNumber disabled">
+        </div>
+        <div class="col-2">
+        </div>
+        <div class="col-3">
+        </div>
+    </div> 
 
     <div class="spacer"></div>
     <div class="spacer"></div>

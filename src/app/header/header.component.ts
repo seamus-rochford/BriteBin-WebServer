@@ -58,6 +58,7 @@ export class HeaderComponent implements OnInit {
         console.log('this.displayName: ' + this.displayName);
       } else {
         this.displayName = "";
+        console.log('this.displayName: no displayName');
       }
     }
     return this.displayName;

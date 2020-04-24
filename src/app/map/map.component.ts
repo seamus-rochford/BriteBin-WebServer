@@ -15,6 +15,7 @@ import { DeviceType } from '../model/device_type';
 import { BinType } from '../model/bin_type';
 import { ContentType } from '../model/content_type';
 import { BinLevel } from '../model/bin_level';
+import { Global } from '../model/global';
 
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { reduce } from 'rxjs/operators';
@@ -23,9 +24,6 @@ declare var $: any; // jQuery
 
 const clone = obj => JSON.parse(JSON.stringify(obj));
 
-const BIN_LEVEL_EMPTY_ID = 0;
-const BIN_LEVEL_BETWEEN_ID = 1;
-const BIN_LEVEL_FULL_ID = 2;
 
 @Component({
   selector: 'app-map',
@@ -59,6 +57,7 @@ export class MapComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private lookupService: LookupService,
+    private global: Global,
     public router: Router    
 
   ) { }
@@ -77,7 +76,7 @@ export class MapComponent implements OnInit {
       this.getBinTypes(),
       this.getBinLevels(),
       this.getContentTypes()
-    ]).then(values =>{
+    ]).then(values => {
       this.getLatestReadings();
 
       this.defaultAllSelected(this.mapSearch.deviceTypes);
@@ -156,23 +155,6 @@ export class MapComponent implements OnInit {
 
       reading.readingDateTimeStr = this.formatDate(reading.readingDateTime);
 
-      let emptyLevel = 0;
-      let fullLevel = 0;
-      if (reading.unit.useBinTypeLevel) {
-        emptyLevel = reading.unit.binType.emptyLevel;
-        fullLevel = reading.unit.binType.fullLevel;
-      } else {
-        emptyLevel = reading.unit.emptyLevel;
-        fullLevel = reading.unit.fullLevel;
-      }
-      if (reading.binLevel < emptyLevel) {
-        reading.binLevelType = BIN_LEVEL_EMPTY_ID;
-      } else if (reading.binLevel >= fullLevel) {
-        reading.binLevelType = BIN_LEVEL_FULL_ID;
-      } else {
-        reading.binLevelType = BIN_LEVEL_BETWEEN_ID;
-      }
-
     });
 
     console.log('setReadingValues - end');
@@ -241,7 +223,7 @@ export class MapComponent implements OnInit {
         }
 
         for (let i = 0; i < this.mapSearch.binLevels.length; i++) {
-          if (readingObject.binLevelType === this.mapSearch.binLevels[i].id)
+          if (readingObject.binLevelStatus === this.mapSearch.binLevels[i].id)
             includeReading = includeReading && this.mapSearch.binLevels[i].selected;
         }
 
@@ -317,10 +299,10 @@ export class MapComponent implements OnInit {
 
       // icon color
       let binColor = '';
-      if (reading.binLevelType === BIN_LEVEL_EMPTY_ID) {
-        binColor = '#2b8f17';
-      } else if (reading.binLevelType === BIN_LEVEL_FULL_ID) {
-        binColor = '#da291c';
+      if (reading.binLevelStatus === this.global.binStatus.BIN_EMPTY) {
+        binColor = this.global.binColor.EMPTY
+      } else if (reading.binLevelStatus === this.global.binStatus.BIN_FULL) {
+        binColor = this.global.binColor.FULL;
       } else {
         binColor = '#fc8804';
       }
@@ -331,7 +313,7 @@ export class MapComponent implements OnInit {
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
             fillColor: '#AAA',
-            fillOpacity: 0.5,
+            fillOpacity: 0.2,
             strokeWeight: 0,
             scale: 12
           },          
@@ -342,7 +324,7 @@ export class MapComponent implements OnInit {
             fontSize: '24px',
             fontWeight: '400'
           },
-          title: "Location: " + reading.unit.location + "\nBin Level: " + reading.binLevel + "\nContent: " + reading.unit.contentType.name
+          title: "Location: " + reading.unit.location + "\nBin Level: " + reading.binLevelPercent + " %\nContent: " + reading.unit.contentType.name
       });
 
       // Create Info window
@@ -352,7 +334,9 @@ export class MapComponent implements OnInit {
 
       // Add click event to marker
       marker.addListener("click", () => {
-        infoWindow.open(marker.getMap(), marker);
+        console.log('Unit id: ' + reading.unit.id);
+        this.router.navigateByUrl('unit/' + reading.unit.id);
+        // infoWindow.open(marker.getMap(), marker);
       });
 
       this.mapMarkers.push(marker);

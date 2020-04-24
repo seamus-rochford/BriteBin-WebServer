@@ -63,6 +63,7 @@ export class UnitsComponent implements OnInit {
   sortOrderContentType = 0;
   sortOrderUseBinTypeLevel = 0;
   sortOrderEmptyLevel = 0;
+  sortOrderFullLevel = 0;
   sortOrderLastActivity = 0;
   sortOrderCreated = 0;
 
@@ -160,8 +161,10 @@ export class UnitsComponent implements OnInit {
 
       if (unit.useBinTypeLevel) {
         unit.emptyLevelSort = unit.binType.emptyLevel;
+        unit.fullLevelSort = unit.binType.fullLevel;
       } else {
         unit.emptyLevelSort = unit.emptyLevel;
+        unit.fullLevelSort = unit.fullLevel;
       }
       unit.lastActivityStr = this.formatDate(unit.lastActivity);
 
@@ -268,6 +271,12 @@ export class UnitsComponent implements OnInit {
     console.log('Sort By Empty Level');
     this.sortOrderEmptyLevel = toggleSort(this.sortOrderEmptyLevel);
     this.units.sort(dynamicSort('emptyLevelSort', this.sortOrderEmptyLevel));
+  }
+
+  public sortByFullLevel() {
+    console.log('Sort By Full Level');
+    this.sortOrderFullLevel = toggleSort(this.sortOrderFullLevel);
+    this.units.sort(dynamicSort('fullLevelSort', this.sortOrderFullLevel));
   }
 
   public sortByLastActivity() {

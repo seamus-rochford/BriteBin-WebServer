@@ -8,14 +8,18 @@ import { dynamicSort, toggleSort } from 'src/app/shared/dynamic-sort';
 
 import { Reading } from 'src/app/model/reading';
 import { ReadingsSearch } from 'src/app/model/readings_search';
-import { Locale } from '../model/locale';
+import { User } from 'src/app/model/user';
+import { Locale } from 'src/app/model/locale';
+import { Global } from 'src/app/model/global';
 
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { faList } from '@fortawesome/free-solid-svg-icons';
+import { faFlag } from '@fortawesome/free-solid-svg-icons';
 
 declare var $: any; // jQuery
 
@@ -36,13 +40,16 @@ export class LatestReadingsComponent implements OnInit {
   // fontawesome icons
   faSearch = faSearch;
   faBin = faTrash;
+  faBinAlt = faTrashAlt;
   faBack = faAngleLeft;
   faFilePdf = faFilePdf;
   faFileExcel = faFileExcel;
   faList = faList;
+  faFlag = faFlag;
 
   // Locale of logged in user
   locale: Locale;
+  loggedInUser: User;
 
   allReadings: Reading[];   // stores all readings
   readings: Reading[];      // stores all readings filtered by screen filters
@@ -50,6 +57,7 @@ export class LatestReadingsComponent implements OnInit {
   sortOrderLocation = 0;
   sortOrderBinType = 0;
   sortOrderContentType = 0;
+  sortOrderDeviceType = 0;
   sortOrderBinLevel = 0;
   sortOrderBinLevelBC = 0;
   sortOrderNoFlapOpenings = 0;
@@ -65,18 +73,22 @@ export class LatestReadingsComponent implements OnInit {
   sortOrderRsrp = 0;
   sortOrderReadingTime = 0;
 
+  displaySystemColumns = false;
+
   displayWaitingDialog = true;
   
   constructor(
     private authService: AuthService,
     private unitService: UnitService,
     private location: Location,
-    public router: Router    
+    public router: Router,
+    public global: Global
   ) { }
 
   ngOnInit(): void {
     console.log('Unit Readings List - Init - start');
   
+    this.loggedInUser = this.authService.getUser();
     this.locale = this.authService.getLocale();
 
     this.getLatestReadings();
@@ -87,6 +99,10 @@ export class LatestReadingsComponent implements OnInit {
 
     this.readingsSearch = new ReadingsSearch();
     this.readingsSearch.searchStr = [];      
+
+    if (this.loggedInUser.role.id == this.global.userRoles.ADMIN) {
+      this.displaySystemColumns = true;
+    }
   }
 
   getLatestReadings(): void {
@@ -123,12 +139,7 @@ export class LatestReadingsComponent implements OnInit {
       reading.locationSort = reading.unit.location;
       reading.binTypeSort = reading.unit.binType.name;
       reading.contentTypeSort = reading.unit.contentType.name;
-
-      if (reading.unit.reading40percent - reading.unit.reading100percent > 0) {
-        // don't allow divide by zero
-        reading.binLevelPercent = Math.round(100 - (reading.binLevel - reading.unit.reading100percent) / (reading.unit.reading40percent - reading.unit.reading100percent) * 60);
-        reading.binLevelBCPercent = Math.round(100 - (reading.binLevelBC - reading.unit.reading100percent) / (reading.unit.reading40percent - reading.unit.reading100percent) * 60);
-      }
+      reading.deviceTypeSort = reading.unit.deviceType.name;
       
       reading.readingDateTimeStr = this.formatDate(reading.readingDateTime);
     });
@@ -159,6 +170,7 @@ export class LatestReadingsComponent implements OnInit {
             includeReading = includeReading
               && ((readingObject.unit.location.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (readingObject.unit.binType.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (readingObject.unit.deviceType.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (readingObject.unit.contentType.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (readingObject.readingDateTimeStr.indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (readingObject.binLevel.toString().indexOf(searchSubStr.toUpperCase()) !== -1)
@@ -199,6 +211,12 @@ export class LatestReadingsComponent implements OnInit {
     this.readings.sort(dynamicSort('binTypeSort', this.sortOrderBinType));
   }
 
+  public sortByDeviceType() {
+    console.log('Sort By deviceType');
+    this.sortOrderDeviceType = toggleSort(this.sortOrderDeviceType);
+    this.readings.sort(dynamicSort('deviceTypeSort', this.sortOrderDeviceType));
+  }
+
   public sortByContentType() {
     console.log('Sort By contenetType');
     this.sortOrderContentType = toggleSort(this.sortOrderContentType);
@@ -208,13 +226,13 @@ export class LatestReadingsComponent implements OnInit {
   public sortByBinLevel() {
     console.log('Sort By binLevel');
     this.sortOrderBinLevel = toggleSort(this.sortOrderBinLevel);
-    this.readings.sort(dynamicSort('binLevel', this.sortOrderBinLevel));
+    this.readings.sort(dynamicSort('binLevelPercent', this.sortOrderBinLevel));
   }
 
   public sortByBinLevelBC() {
     console.log('Sort By binLevelBC');
     this.sortOrderBinLevelBC= toggleSort(this.sortOrderBinLevelBC);
-    this.readings.sort(dynamicSort('binLevelBC', this.sortOrderBinLevelBC));
+    this.readings.sort(dynamicSort('binLevelBCPercent', this.sortOrderBinLevelBC));
   }
 
   public sortByNoFlapOpenings() {

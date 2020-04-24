@@ -6,6 +6,7 @@ export class Reading {
     locationSort: string;
     binTypeSort: string;
     contentTypeSort: string;
+    deviceTypeSort: string;
     rawDataId: number;
     msgType: number;
 
@@ -13,6 +14,7 @@ export class Reading {
     binLevelPercent: number;
     binLevelBC: number;
     binLevelBCPercent: number;
+    compactionDone: boolean;
     noFlapOpenings: number;
     batteryVoltage: number;
     temperature: number;
@@ -20,7 +22,7 @@ export class Reading {
     
     // Flags
     batteryUVLO: boolean;
-    binEmpiedLastPeriod: boolean;
+    binEmptiedLastPeriod: boolean;
     batteryOverTempLO: boolean;
     binLocked: boolean;
     binFull: boolean;
@@ -43,5 +45,5 @@ export class Reading {
     readingDateTime: Date;
     readingDateTimeStr: string = '';    
 
-    binLevelType: number;  // 0 = Empty, 1 = In between, 2 = full
+    binLevelStatus: number;  // 1 = Empty, 2 = In between, 3 = full
 }
