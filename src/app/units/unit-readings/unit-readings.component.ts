@@ -64,6 +64,8 @@ export class UnitReadingsComponent implements OnInit {
   sortOrderTemperature = 0;
   sortOrderNoCompactions = 0;
   sortOrderMessageType = 0;
+  sortOrderVoltageReading = 0;
+  sortOrderSource = 0;
   sortOrderRssi = 0;
   sortOrderSrc = 0;
   sortOrderSnr = 0;
@@ -263,6 +265,18 @@ export class UnitReadingsComponent implements OnInit {
     console.log('Sort By MsgType');
     this.sortOrderMessageType = toggleSort(this.sortOrderMessageType);
     this.readings.sort(dynamicSort('messageType', this.sortOrderMessageType));
+  }
+
+  public sortByVoltageReading() {
+    console.log('Sort By sortByVoltageReading');
+    this.sortOrderVoltageReading = toggleSort(this.sortOrderVoltageReading);
+    this.readings.sort(dynamicSort('batteryVoltageReading', this.sortOrderVoltageReading));
+  }
+
+  public sortBySource() {
+    console.log('Sort By batteryVoltage');
+    this.sortOrderSource = toggleSort(this.sortOrderSource);
+    this.readings.sort(dynamicSort('source', this.sortOrderSource));
   }
 
   public sortByRssi() {

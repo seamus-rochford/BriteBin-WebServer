@@ -81,6 +81,8 @@
                     </th>
                     <th scope="col" (click)="sortByReadingTime()">Reading Time</th>
                     <th scope="col" (click)="sortByMsgType()" *ngIf="displaySystemColumns">Msg. Type</th>
+                    <th scope="col" (click)="sortBySource()" *ngIf="displaySystemColumns">Source</th>
+                    <th scope="col" (click)="sortByVoltageReading()" *ngIf="displaySystemColumns">Batt. Vol.</th>
                     <th scope="col" (click)="sortByBinLevel()" *ngIf="displaySystemColumns">Bin Level</th>
                     <th scope="col" (click)="sortByBinLevelBC()" *ngIf="displaySystemColumns">Level B.C.</th>
                     <th scope="col" (click)="sortByRssi()" *ngIf="displaySystemColumns">RSSI</th>
@@ -102,7 +104,7 @@
                         <fa-icon [icon]="faBinAlt" [styles]="{'color': '#da291c'}" *ngIf="reading.binLevelStatus === 3"></fa-icon>
                     </td>
                     <td>
-                        {{ reading.binLevelPercent }} %({{ reading.binLevelStatus }}) ({{ reading.binLevel }})
+                        {{ reading.binLevelPercent }} % <span title="src < 9 - reading unrealible" *ngIf="reading.unit.deviceType.id === 1 && reading.src < 9"> *</span>
                     </td>
                     <td *ngIf="reading.unit.deviceType.id === 1">-</td>
                     <td *ngIf="reading.unit.deviceType.id === 2">
@@ -114,7 +116,7 @@
                     </td>
                     <td *ngIf="reading.unit.deviceType.id === 1">-</td>
                     <td *ngIf="reading.unit.deviceType.id === 2">
-                        {{ reading.batteryVoltage }}
+                        {{ reading.batteryVoltage | number:'1.2-2' }}
                     </td>
                     <td>
                         {{ reading.temperature }}
@@ -152,6 +154,12 @@
                     </td>
                     <td *ngIf="displaySystemColumns">
                         {{ reading.msgType }}
+                    </td>
+                    <td *ngIf="displaySystemColumns">
+                        {{ reading.source }}
+                    </td>
+                    <td *ngIf="displaySystemColumns">
+                        {{ reading.batteryVoltageReading }}
                     </td>
                     <td *ngIf="displaySystemColumns">
                         {{ reading.binLevel }}

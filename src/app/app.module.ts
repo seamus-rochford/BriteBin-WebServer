@@ -35,6 +35,9 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { UnitReadingsComponent } from './units/unit-readings/unit-readings.component';
 import { LatestReadingsComponent } from './latest-readings/latest-readings.component';
 import { MapComponent } from './map/map.component';
+import { ConfigComponent } from './config/config.component';
+import { BulkCreateUnitsComponent } from './units/bulk-create-units/bulk-create-units.component';
+import { AlertsComponent } from './alerts/alerts.component';
 
 registerLocaleData(localeIE, 'en-IE');
 registerLocaleData(localeHR, 'hr-HR');
@@ -54,7 +57,10 @@ registerLocaleData(localeHR, 'hr-HR');
     ConfirmationDialogComponent,
     UnitReadingsComponent,
     LatestReadingsComponent,
-    MapComponent
+    MapComponent,
+    ConfigComponent,
+    BulkCreateUnitsComponent,
+    AlertsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,45 @@
+
+.container {
+    padding-top: 20px;
+}
+.row {
+    padding-top: 5px;
+}
+
+.simpleNumber {
+    width: 40px;
+}
+.disabled {
+    background-color: lightgray;
+}
+
+.alignLabel {
+    padding-left: 5px;
+    text-indent: 5px;    
+}
+
+.alignCheckBox {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    margin:0;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    *overflow: hidden;
+}
+
+.serialNos {
+    height:200px; 
+    width:150px;
+    overflow:hidden; 
+    overflow-y:scroll;   
+    border: 1px solid lightgrey; 
+}
+
+.serialNo {
+    width: 150px;
+}
+.addButton {
+    padding: 0px 5px;
+}

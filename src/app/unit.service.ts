@@ -29,6 +29,7 @@ export class UnitService {
     return this.httpClient.get(url);
   }
 
+
   // GET unit (by email)
   getUnitBySerialNo(serialNo: string) {
     const url = `${this.unitUrl}/getUnit?serialNo=` + serialNo;

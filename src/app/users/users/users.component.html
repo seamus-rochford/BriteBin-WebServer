@@ -24,6 +24,7 @@
                     <th scope="col" (click)="sortByStatus()">Status</th>
                     <th scope="col" (click)="sortByEmail()">Email</th>
                     <th scope="col" (click)="sortByRole()">Role</th>
+                    <th scope="col" (click)="sortByParent()">Parent</th>
                     <th scope="col" (click)="sortByName()">Name</th>
                     <th scope="col" (click)="sortByAddr1()">Address 1</th>
                     <th scope="col" (click)="sortByAddr2()">Address 2</th>
@@ -49,6 +50,9 @@
                     </td>
                     <td (click)="editUser(user.id)">
                         {{ user.role.name }}
+                    </td>
+                    <td (click)="editUser(user.id)">
+                        {{ user.parent.name }}
                     </td>
                     <td (click)="editUser(user.id)">
                         {{ user.name }}

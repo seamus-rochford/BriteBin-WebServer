@@ -66,8 +66,8 @@
             <label >Role</label>
         </div>
         <div class="col-3">
-            <select [(ngModel)]="user.role" [compareWith]="compareById">
-                <option *ngFor="let role of roles" [ngValue]="role" [selected]="role.id === user.role.id">
+            <select [(ngModel)]="user.role" [compareWith]="compareById" (change)="onRoleChange(user.role)">
+                <option *ngFor="let role of roles" [ngValue]="role">
                     {{ role.name }}
                 </option>
             </select>          
@@ -81,14 +81,14 @@
     </div>   
     <div class="row justify-content-md-center">
         <div class="col-2">
-            <label >Locale</label>
+            <label >Parent</label>
         </div>
         <div class="col-3">
-            <select [(ngModel)]="user.locale" [compareWith]="compareByName">
-                <option *ngFor="let locale of locales" [ngValue]="locale">
-                    {{ locale.name }}
+            <select required [(ngModel)]="user.parent" [compareWith]="compareById">
+                <option *ngFor="let parent of possibleParents" [ngValue]="parent">
+                    {{ parent.name }}
                 </option>
-            </select>        
+            </select>          
         </div>
         <div class="col-2">
             <label >County</label>
@@ -99,10 +99,14 @@
     </div>  
     <div class="row justify-content-md-center">
         <div class="col-2">
-            <label >Bin Level Alert</label>
+            <label >Locale</label>
         </div>
         <div class="col-3">
-            <input [(ngModel)]="user.binLevelAlert" type="number" style="width: 40px;">&nbsp;%          
+            <select [(ngModel)]="user.locale" [compareWith]="compareByAbbr">
+                <option *ngFor="let locale of locales" [ngValue]="locale">
+                    {{ locale.name }}
+                </option>
+            </select>        
         </div>
         <div class="col-2">
             <label >Postcode</label>
@@ -113,11 +117,10 @@
     </div>  
     <div class="row justify-content-md-center">
         <div class="col-2">
-            <label >Status</label>
+            <label >Bin Level Alert</label>
         </div>
         <div class="col-3">
-            <input type="hidden" value="user.status.id">
-            <input type="text" readonly value="{{ user.status.name }}" style="background-color:lightgrey;">
+            <input [(ngModel)]="user.binLevelAlert" type="number" style="width: 60px;">&nbsp;%          
         </div>
         <div class="col-2">
             <label id="status">Country</label>
@@ -132,11 +135,11 @@
     </div>  
     <div class="row justify-content-md-center">
         <div class="col-2">
-            <label >Parent</label>
+            <label >Status</label>
         </div>
         <div class="col-3">
-            <input [(ngModel)]="user.parentId" type="hidden">
-            <input [(ngModel)]="user.parentName" type="text" readonly style="background-color:lightgrey;">         
+            <input type="hidden" value="user.status.id">
+            <input type="text" readonly value="{{ user.status.name }}" style="background-color:lightgrey;">
         </div>
         <div class="col-2">
             <label >Mobile</label>

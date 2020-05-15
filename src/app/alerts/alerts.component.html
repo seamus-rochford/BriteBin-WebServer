@@ -1,0 +1,907 @@
+<kendo-dialog *ngIf="displayWaitingDialog">
+    <img class="waitingDialog" src="../../assets/images/loader_dark.gif" alt="../../assets/images/loader.gif">
+</kendo-dialog>
+<div class="container">
+    <div class="form-header row">
+        <div class="col-12">
+            <span><fa-icon [icon]="faBell"></fa-icon>&nbsp;&nbsp;Alerts</span>
+        </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="row justify-content-end errorMessage" *ngIf="errorMsg !== ''">
+        <span style="white-space: pre;"><fa-icon [icon]="faExclamation"></fa-icon>&nbsp;&nbsp;{{ errorMsg }}</span>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+            <label>Customer</label>
+        </div>
+        <div class="col-3">
+            <select required [(ngModel)]="customer" [compareWith]="compareById" (change)="refreshAlertLists()">
+                <option *ngFor="let parent of possibleBinParents" [ngValue]="parent">
+                    {{ parent.name }}
+                </option>
+            </select>                                           
+        </div>
+    </div>
+
+    <hr width="100%" />
+
+    <div *ngIf="!(adminAlerts == null || adminAlerts.length === 0)">
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <label>Administrators</label>
+            </div>
+        </div>
+        <div class="col-12" style="padding: 0px;">
+            <div class="tableFixHead1Line">
+                <table class="table table-striped table-bordered adminAlert">
+                    <thead class="table-header">
+                        <tr>
+                            <th style="text-align: center;">
+                                <input type="checkbox" id="allCheckbox" class="checkbox">
+                            </th>
+                            <th scope="col">Name</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Bin Full Alert"><fa-icon [icon]="faBin" size="lg" style="color:#da291c"></fa-icon></th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Battery UVLO">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg" style="color:#da291c"></fa-icon>
+                                    <fa-layers-text content="1" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>                        
+                            </th>
+                            <th scope="col" title="Emptied Last Period" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="2" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Battery Over TempLO" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="3" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Bin Locked" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="4" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <!-- <th scope="col" title="Bin Full">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="5" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th> -->
+                            <th scope="col" title="Bin Tilted" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="6" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Service Door Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="7" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Flap Stuck Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="8" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Damage" style="color:#da291c">
+                                <fa-icon [icon]="faDamage" size="lg"></fa-icon>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">SMS</th>
+                            <th scope="col">WhatsApp</th>
+                            <th scope="col">Push</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr *ngFor="let alert of adminAlerts; let i = index" >
+                            <td style="text-align: center;">
+                                <input type="checkbox" id={{alert.id}} value={{alert.id}} name="userAdminCheckbox" class="checkbox">
+                            </td>
+                            <td>
+                                {{ alert.user.name }}
+                            </td>
+                            <td>
+                                {{ alert.user.email }}
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" name="binFullCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Battery UVLO">
+                                <input type="checkbox" ng-checked="alert.batteryUVLO" [(ngModel)]="alert.batteryUVLO" name="batteryCheckbox" class="checkbox">
+                            </td>
+                            <td title="Bin Emptied Last Period">
+                                <input type="checkbox" ng-checked="alert.binEmptiedLastPeriod" [(ngModel)]="alert.binEmptiedLastPeriod" name="binEmptyLPCheckbox" class="checkbox">
+                            </td>
+                            <td title="Battery Over Temp. LO">
+                                <input type="checkbox" ng-checked="alert.batteryOverTempLO" [(ngModel)]="alert.batteryOverTempLO" name="temCheckBox" class="checkbox">
+                            </td>
+                            <td title="Bin Locked">
+                                <input type="checkbox" ng-checked="alert.binLocked" [(ngModel)]="alert.binLocked" name="binLockedCheckbox" class="checkbox">
+                            </td>
+                            <!-- <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" class="checkbox">
+                            </td> -->
+                            <td title="Bin Tilted">
+                                <input type="checkbox" ng-checked="alert.binTilted" [(ngModel)]="alert.binTilted" name="binTiltedCheckbox" class="checkbox">
+                            </td>
+                            <td title="Service Door Open">
+                                <input type="checkbox" ng-checked="alert.serviceDoorOpen" [(ngModel)]="alert.serviceDoorOpen" name="serviceDoorCheckbox" class="checkbox">
+                            </td>
+                            <td title="Flap Stuck Open">
+                                <input type="checkbox" ng-checked="alert.flapStuckOpen" [(ngModel)]="alert.flapStuckOpen" name="flapCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Damage">
+                                <input type="checkbox" ng-checked="alert.damage" [(ngModel)]="alert.damage" name="damageCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Email">
+                                <input type="checkbox" ng-checked="alert.email" [(ngModel)]="alert.email" name="emailCheckbox" class="checkbox">
+                            </td>
+                            <td title="Sms">
+                                <input type="checkbox" ng-checked="alert.sms" [(ngModel)]="alert.sms" name="smsCheckbox" class="checkbox">
+                            </td>
+                            <td title="WhatsApp">
+                                <input type="checkbox" ng-checked="alert.whatsApp" [(ngModel)]="alert.whatsApp" name="whatsappCheckbox" class="checkbox">
+                            </td>
+                            <td title="Push Notification">
+                                <input type="checkbox" ng-checked="alert.pushNotification" [(ngModel)]="alert.pushNotification" name="pushCheckbox" class="checkbox">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> 
+        <hr width="100%" />
+    </div>
+
+    <div *ngIf="!(distAlerts == null || distAlerts.length === 0)">
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <label>Distributors</label>
+            </div>
+        </div>
+        <div class="col-12" style="padding: 0px;">
+            <div class="tableFixHead1Line">
+                <table class="table table-striped table-bordered distAlert">
+                    <thead class="table-header">
+                        <tr>
+                            <th style="text-align: center;">
+                                <input type="checkbox" id="allCheckbox" class="checkbox">
+                            </th>
+                            <th scope="col">Name</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Bin Full Alert"><fa-icon [icon]="faBin" size="lg" style="color:#da291c"></fa-icon></th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Battery UVLO">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg" style="color:#da291c"></fa-icon>
+                                    <fa-layers-text content="1" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>                        
+                            </th>
+                            <th scope="col" title="Emptied Last Period" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="2" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Battery Over TempLO" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="3" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Bin Locked" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="4" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <!-- <th scope="col" title="Bin Full">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="5" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th> -->
+                            <th scope="col" title="Bin Tilted" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="6" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Service Door Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="7" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Flap Stuck Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="8" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Damage" style="color:#da291c">
+                                <fa-icon [icon]="faDamage" size="lg"></fa-icon>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">SMS</th>
+                            <th scope="col">WhatsApp</th>
+                            <th scope="col">Push</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr *ngFor="let alert of distAlerts; let i = index" >
+                            <td style="text-align: center;">
+                                <input type="checkbox" id={{alert.id}} value={{alert.id}} name="userDistCheckbox" class="checkbox">
+                            </td>
+                            <td>
+                                {{ alert.user.name }}
+                            </td>
+                            <td>
+                                {{ alert.user.email }}
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" name="binFullCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Battery UVLO">
+                                <input type="checkbox" ng-checked="alert.batteryUVLO" [(ngModel)]="alert.batteryUVLO" name="batteryCheckbox" class="checkbox">
+                            </td>
+                            <td title="Bin Emptied Last Period">
+                                <input type="checkbox" ng-checked="alert.binEmptiedLastPeriod" [(ngModel)]="alert.binEmptiedLastPeriod" name="binEmptyLPCheckbox" class="checkbox">
+                            </td>
+                            <td title="Battery Over Temp. LO">
+                                <input type="checkbox" ng-checked="alert.batteryOverTempLO" [(ngModel)]="alert.batteryOverTempLO" name="temCheckBox" class="checkbox">
+                            </td>
+                            <td title="Bin Locked">
+                                <input type="checkbox" ng-checked="alert.binLocked" [(ngModel)]="alert.binLocked" name="binLockedCheckbox" class="checkbox">
+                            </td>
+                            <!-- <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" class="checkbox">
+                            </td> -->
+                            <td title="Bin Tilted">
+                                <input type="checkbox" ng-checked="alert.binTilted" [(ngModel)]="alert.binTilted" name="binTiltedCheckbox" class="checkbox">
+                            </td>
+                            <td title="Service Door Open">
+                                <input type="checkbox" ng-checked="alert.serviceDoorOpen" [(ngModel)]="alert.serviceDoorOpen" name="serviceDoorCheckbox" class="checkbox">
+                            </td>
+                            <td title="Flap Stuck Open">
+                                <input type="checkbox" ng-checked="alert.flapStuckOpen" [(ngModel)]="alert.flapStuckOpen" name="flapCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Damage">
+                                <input type="checkbox" ng-checked="alert.damage" [(ngModel)]="alert.damage" name="damageCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Email">
+                                <input type="checkbox" ng-checked="alert.email" [(ngModel)]="alert.email" name="emailCheckbox" class="checkbox">
+                            </td>
+                            <td title="Sms">
+                                <input type="checkbox" ng-checked="alert.sms" [(ngModel)]="alert.sms" name="smsCheckbox" class="checkbox">
+                            </td>
+                            <td title="WhatsApp">
+                                <input type="checkbox" ng-checked="alert.whatsApp" [(ngModel)]="alert.whatsApp" name="whatsappCheckbox" class="checkbox">
+                            </td>
+                            <td title="Push Notification">
+                                <input type="checkbox" ng-checked="alert.pushNotification" [(ngModel)]="alert.pushNotification" name="pushCheckbox" class="checkbox">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> 
+        <hr width="100%" />
+    </div>
+
+    <div *ngIf="!(techAlerts == null || techAlerts.length === 0)">
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <label>Technicians</label>
+            </div>
+        </div>
+        <div class="col-12" style="padding: 0px;">
+            <div class="tableFixHead">
+                <table class="table table-striped table-bordered techAlert">
+                    <thead class="table-header">
+                        <tr>
+                            <th style="text-align: center;">
+                                <input type="checkbox" id="allCheckbox" class="checkbox">
+                            </th>
+                            <th scope="col">Name</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Bin Full Alert"><fa-icon [icon]="faBin" size="lg" style="color:#da291c"></fa-icon></th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Battery UVLO">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg" style="color:#da291c"></fa-icon>
+                                    <fa-layers-text content="1" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>                        
+                            </th>
+                            <th scope="col" title="Emptied Last Period" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="2" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Battery Over TempLO" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="3" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Bin Locked" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="4" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <!-- <th scope="col" title="Bin Full">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="5" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th> -->
+                            <th scope="col" title="Bin Tilted" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="6" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Service Door Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="7" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Flap Stuck Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="8" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Damage" style="color:#da291c">
+                                <fa-icon [icon]="faDamage" size="lg"></fa-icon>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">SMS</th>
+                            <th scope="col">WhatsApp</th>
+                            <th scope="col">Push</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr *ngFor="let alert of techAlerts; let i = index" >
+                            <td style="text-align: center;">
+                                <input type="checkbox" id={{alert.id}} value={{alert.id}} name="userTechCheckbox" class="checkbox">
+                            </td>
+                            <td>
+                                {{ alert.user.name }}
+                            </td>
+                            <td>
+                                {{ alert.user.email }}
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" name="binFullCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Battery UVLO">
+                                <input type="checkbox" ng-checked="alert.batteryUVLO" [(ngModel)]="alert.batteryUVLO" name="batteryCheckbox" class="checkbox">
+                            </td>
+                            <td title="Bin Emptied Last Period">
+                                <input type="checkbox" ng-checked="alert.binEmptiedLastPeriod" [(ngModel)]="alert.binEmptiedLastPeriod" name="binEmptyLPCheckbox" class="checkbox">
+                            </td>
+                            <td title="Battery Over Temp. LO">
+                                <input type="checkbox" ng-checked="alert.batteryOverTempLO" [(ngModel)]="alert.batteryOverTempLO" name="temCheckBox" class="checkbox">
+                            </td>
+                            <td title="Bin Locked">
+                                <input type="checkbox" ng-checked="alert.binLocked" [(ngModel)]="alert.binLocked" name="binLockedCheckbox" class="checkbox">
+                            </td>
+                            <!-- <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" class="checkbox">
+                            </td> -->
+                            <td title="Bin Tilted">
+                                <input type="checkbox" ng-checked="alert.binTilted" [(ngModel)]="alert.binTilted" name="binTiltedCheckbox" class="checkbox">
+                            </td>
+                            <td title="Service Door Open">
+                                <input type="checkbox" ng-checked="alert.serviceDoorOpen" [(ngModel)]="alert.serviceDoorOpen" name="serviceDoorCheckbox" class="checkbox">
+                            </td>
+                            <td title="Flap Stuck Open">
+                                <input type="checkbox" ng-checked="alert.flapStuckOpen" [(ngModel)]="alert.flapStuckOpen" name="flapCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Damage">
+                                <input type="checkbox" ng-checked="alert.damage" [(ngModel)]="alert.damage" name="damageCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Email">
+                                <input type="checkbox" ng-checked="alert.email" [(ngModel)]="alert.email" name="emailCheckbox" class="checkbox">
+                            </td>
+                            <td title="Sms">
+                                <input type="checkbox" ng-checked="alert.sms" [(ngModel)]="alert.sms" name="smsCheckbox" class="checkbox">
+                            </td>
+                            <td title="WhatsApp">
+                                <input type="checkbox" ng-checked="alert.whatsApp" [(ngModel)]="alert.whatsApp" name="whatsappCheckbox" class="checkbox">
+                            </td>
+                            <td title="Push Notification">
+                                <input type="checkbox" ng-checked="alert.pushNotification" [(ngModel)]="alert.pushNotification" name="pushCheckbox" class="checkbox">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> 
+        <hr width="100%" />
+    </div>
+
+    <div *ngIf="!(corpAlerts == null || corpAlerts.length === 0)">
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <label>Corporate Customers</label>
+            </div>
+        </div>
+        <div class="col-12" style="padding: 0px;">
+            <div class="tableFixHead1Line">
+                <table class="table table-striped table-bordered corpAlert">
+                    <thead class="table-header">
+                        <tr>
+                            <th style="text-align: center;">
+                                <input type="checkbox" id="allCheckbox" class="checkbox">
+                            </th>
+                            <th scope="col">Name</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Bin Full Alert"><fa-icon [icon]="faBin" size="lg" style="color:#da291c"></fa-icon></th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Battery UVLO">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg" style="color:#da291c"></fa-icon>
+                                    <fa-layers-text content="1" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>                        
+                            </th>
+                            <th scope="col" title="Emptied Last Period" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="2" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Battery Over TempLO" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="3" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Bin Locked" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="4" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <!-- <th scope="col" title="Bin Full">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="5" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th> -->
+                            <th scope="col" title="Bin Tilted" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="6" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Service Door Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="7" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Flap Stuck Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="8" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Damage" style="color:#da291c">
+                                <fa-icon [icon]="faDamage" size="lg"></fa-icon>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">SMS</th>
+                            <th scope="col">WhatsApp</th>
+                            <th scope="col">Push</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr *ngFor="let alert of corpAlerts; let i = index" >
+                            <td style="text-align: center;">
+                                <input type="checkbox" id={{alert.id}} value={{alert.id}} name="userCorpCheckbox" class="checkbox">
+                            </td>
+                            <td>
+                                {{ alert.user.name }}
+                            </td>
+                            <td>
+                                {{ alert.user.email }}
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" name="binFullCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Battery UVLO">
+                                <input type="checkbox" ng-checked="alert.batteryUVLO" [(ngModel)]="alert.batteryUVLO" name="batteryCheckbox" class="checkbox">
+                            </td>
+                            <td title="Bin Emptied Last Period">
+                                <input type="checkbox" ng-checked="alert.binEmptiedLastPeriod" [(ngModel)]="alert.binEmptiedLastPeriod" name="binEmptyLPCheckbox" class="checkbox">
+                            </td>
+                            <td title="Battery Over Temp. LO">
+                                <input type="checkbox" ng-checked="alert.batteryOverTempLO" [(ngModel)]="alert.batteryOverTempLO" name="temCheckBox" class="checkbox">
+                            </td>
+                            <td title="Bin Locked">
+                                <input type="checkbox" ng-checked="alert.binLocked" [(ngModel)]="alert.binLocked" name="binLockedCheckbox" class="checkbox">
+                            </td>
+                            <!-- <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" class="checkbox">
+                            </td> -->
+                            <td title="Bin Tilted">
+                                <input type="checkbox" ng-checked="alert.binTilted" [(ngModel)]="alert.binTilted" name="binTiltedCheckbox" class="checkbox">
+                            </td>
+                            <td title="Service Door Open">
+                                <input type="checkbox" ng-checked="alert.serviceDoorOpen" [(ngModel)]="alert.serviceDoorOpen" name="serviceDoorCheckbox" class="checkbox">
+                            </td>
+                            <td title="Flap Stuck Open">
+                                <input type="checkbox" ng-checked="alert.flapStuckOpen" [(ngModel)]="alert.flapStuckOpen" name="flapCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Damage">
+                                <input type="checkbox" ng-checked="alert.damage" [(ngModel)]="alert.damage" name="damageCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Email">
+                                <input type="checkbox" ng-checked="alert.email" [(ngModel)]="alert.email" name="emailCheckbox" class="checkbox">
+                            </td>
+                            <td title="Sms">
+                                <input type="checkbox" ng-checked="alert.sms" [(ngModel)]="alert.sms" name="smsCheckbox" class="checkbox">
+                            </td>
+                            <td title="WhatsApp">
+                                <input type="checkbox" ng-checked="alert.whatsApp" [(ngModel)]="alert.whatsApp" name="whatsappCheckbox" class="checkbox">
+                            </td>
+                            <td title="Push Notification">
+                                <input type="checkbox" ng-checked="alert.pushNotification" [(ngModel)]="alert.pushNotification" name="pushCheckbox" class="checkbox">
+                            </td>
+    
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> 
+        <hr width="100%" />
+    </div>
+
+    <div *ngIf="!(custAlerts == null || custAlerts.length === 0)">
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <label>Customers</label>
+            </div>
+        </div>
+        <div class="col-12" style="padding: 0px;">
+            <div class="tableFixHead1Line">
+                <table class="table table-striped table-bordered custAlert" >
+                    <thead class="table-header">
+                        <tr>
+                            <th style="text-align: center;">
+                                <input type="checkbox" id="allCheckbox" class="checkbox">
+                            </th>
+                            <th scope="col">Name</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Bin Full Alert"><fa-icon [icon]="faBin" size="lg" style="color:#da291c"></fa-icon></th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Battery UVLO">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg" style="color:#da291c"></fa-icon>
+                                    <fa-layers-text content="1" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>                        
+                            </th>
+                            <th scope="col" title="Emptied Last Period" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="2" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Battery Over TempLO" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="3" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Bin Locked" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="4" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <!-- <th scope="col" title="Bin Full">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="5" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th> -->
+                            <th scope="col" title="Bin Tilted" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="6" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Service Door Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="7" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Flap Stuck Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="8" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Damage" style="color:#da291c">
+                                <fa-icon [icon]="faDamage" size="lg"></fa-icon>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">SMS</th>
+                            <th scope="col">WhatsApp</th>
+                            <th scope="col">Push</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr *ngFor="let alert of custAlerts; let i = index" >
+                            <td style="text-align: center;">
+                                <input type="checkbox" id={{alert.id}} value={{alert.id}} name="userCustCheckbox" class="checkbox">
+                            </td>
+                            <td>
+                                {{ alert.user.name }}
+                            </td>
+                            <td>
+                                {{ alert.user.email }}
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" name="binFullCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Battery UVLO">
+                                <input type="checkbox" ng-checked="alert.batteryUVLO" [(ngModel)]="alert.batteryUVLO" name="batteryCheckbox" class="checkbox">
+                            </td>
+                            <td title="Bin Emptied Last Period">
+                                <input type="checkbox" ng-checked="alert.binEmptiedLastPeriod" [(ngModel)]="alert.binEmptiedLastPeriod" name="binEmptyLPCheckbox" class="checkbox">
+                            </td>
+                            <td title="Battery Over Temp. LO">
+                                <input type="checkbox" ng-checked="alert.batteryOverTempLO" [(ngModel)]="alert.batteryOverTempLO" name="temCheckBox" class="checkbox">
+                            </td>
+                            <td title="Bin Locked">
+                                <input type="checkbox" ng-checked="alert.binLocked" [(ngModel)]="alert.binLocked" name="binLockedCheckbox" class="checkbox">
+                            </td>
+                            <!-- <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" class="checkbox">
+                            </td> -->
+                            <td title="Bin Tilted">
+                                <input type="checkbox" ng-checked="alert.binTilted" [(ngModel)]="alert.binTilted" name="binTiltedCheckbox" class="checkbox">
+                            </td>
+                            <td title="Service Door Open">
+                                <input type="checkbox" ng-checked="alert.serviceDoorOpen" [(ngModel)]="alert.serviceDoorOpen" name="serviceDoorCheckbox" class="checkbox">
+                            </td>
+                            <td title="Flap Stuck Open">
+                                <input type="checkbox" ng-checked="alert.flapStuckOpen" [(ngModel)]="alert.flapStuckOpen" name="flapCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Damage">
+                                <input type="checkbox" ng-checked="alert.damage" [(ngModel)]="alert.damage" name="damageCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Email">
+                                <input type="checkbox" ng-checked="alert.email" [(ngModel)]="alert.email" name="emailCheckbox" class="checkbox">
+                            </td>
+                            <td title="Sms">
+                                <input type="checkbox" ng-checked="alert.sms" [(ngModel)]="alert.sms" name="smsCheckbox" class="checkbox">
+                            </td>
+                            <td title="WhatsApp">
+                                <input type="checkbox" ng-checked="alert.whatsApp" [(ngModel)]="alert.whatsApp" name="whatsappCheckbox" class="checkbox">
+                            </td>
+                            <td title="Push Notification">
+                                <input type="checkbox" ng-checked="alert.pushNotification" [(ngModel)]="alert.pushNotification" name="pushCheckbox" class="checkbox">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
+        </div>
+        <hr width="100%" />
+    </div>
+
+    <div *ngIf="!(driverAlerts == null || driverAlerts.length === 0)">
+        <div class="row justify-content-md-center">
+            <div class="col-12">
+                <label>Drivers</label>
+            </div>
+        </div>
+        <div class="col-12" style="padding: 0px;">
+            <div class="tableFixHead">
+                <table class="table table-striped table-bordered driverAlert">
+                    <thead class="table-header">
+                        <tr>
+                            <th style="text-align: center;">
+                                <input type="checkbox" id="allCheckbox" class="checkbox">
+                            </th>
+                            <th scope="col">Name</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Bin Full Alert"><fa-icon [icon]="faBin" size="lg" style="color:#da291c"></fa-icon></th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Battery UVLO">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg" style="color:#da291c"></fa-icon>
+                                    <fa-layers-text content="1" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>                        
+                            </th>
+                            <th scope="col" title="Emptied Last Period" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="2" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Battery Over TempLO" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="3" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Bin Locked" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="4" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <!-- <th scope="col" title="Bin Full">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="5" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th> -->
+                            <th scope="col" title="Bin Tilted" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="6" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Service Door Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="7" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" title="Flap Stuck Open" style="color:#da291c">
+                                <fa-layers>
+                                    <fa-icon [icon]="faFlag" size="lg"></fa-icon>
+                                    <fa-layers-text content="8" style="color: white;font-weight: bold" transform="shrink-5 right-3"></fa-layers-text>
+                                </fa-layers>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col" title="Damage" style="color:#da291c">
+                                <fa-icon [icon]="faDamage" size="lg"></fa-icon>
+                            </th>
+                            <th scope="col" style="width:20px"></th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">SMS</th>
+                            <th scope="col">WhatsApp</th>
+                            <th scope="col">Push</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr *ngFor="let alert of driverAlerts; let i = index" >
+                            <td style="text-align: center;">
+                                <input type="checkbox" id={{alert.id}} value={{alert.id}} name="userDriverCheckbox" class="checkbox">
+                            </td>
+                            <td>
+                                {{ alert.user.name }}
+                            </td>
+                            <td>
+                                {{ alert.user.email }}
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" name="binFullCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Battery UVLO">
+                                <input type="checkbox" ng-checked="alert.batteryUVLO" [(ngModel)]="alert.batteryUVLO" name="batteryCheckbox" class="checkbox">
+                            </td>
+                            <td title="Bin Emptied Last Period">
+                                <input type="checkbox" ng-checked="alert.binEmptiedLastPeriod" [(ngModel)]="alert.binEmptiedLastPeriod" name="binEmptyLPCheckbox" class="checkbox">
+                            </td>
+                            <td title="Battery Over Temp. LO">
+                                <input type="checkbox" ng-checked="alert.batteryOverTempLO" [(ngModel)]="alert.batteryOverTempLO" name="temCheckBox" class="checkbox">
+                            </td>
+                            <td title="Bin Locked">
+                                <input type="checkbox" ng-checked="alert.binLocked" [(ngModel)]="alert.binLocked" name="binLockedCheckbox" class="checkbox">
+                            </td>
+                            <!-- <td title="Bin Full">
+                                <input type="checkbox" ng-checked="alert.binFull" [(ngModel)]="alert.binFull" class="checkbox">
+                            </td> -->
+                            <td title="Bin Tilted">
+                                <input type="checkbox" ng-checked="alert.binTilted" [(ngModel)]="alert.binTilted" name="binTiltedCheckbox" class="checkbox">
+                            </td>
+                            <td title="Service Door Open">
+                                <input type="checkbox" ng-checked="alert.serviceDoorOpen" [(ngModel)]="alert.serviceDoorOpen" name="serviceDoorCheckbox" class="checkbox">
+                            </td>
+                            <td title="Flap Stuck Open">
+                                <input type="checkbox" ng-checked="alert.flapStuckOpen" [(ngModel)]="alert.flapStuckOpen" name="flapCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Bin Damage">
+                                <input type="checkbox" ng-checked="alert.damage" [(ngModel)]="alert.damage" name="damageCheckbox" class="checkbox">
+                            </td>
+                            <td scope="col"></td>
+                            <td title="Email">
+                                <input type="checkbox" ng-checked="alert.email" [(ngModel)]="alert.email" name="emailCheckbox" class="checkbox">
+                            </td>
+                            <td title="Sms">
+                                <input type="checkbox" ng-checked="alert.sms" [(ngModel)]="alert.sms" name="smsCheckbox" class="checkbox">
+                            </td>
+                            <td title="WhatsApp">
+                                <input type="checkbox" ng-checked="alert.whatsApp" [(ngModel)]="alert.whatsApp" name="whatsappCheckbox" class="checkbox">
+                            </td>
+                            <td title="Push Notification">
+                                <input type="checkbox" ng-checked="alert.pushNotification" [(ngModel)]="alert.pushNotification" name="pushCheckbox" class="checkbox">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> 
+        <hr width="100%" />
+    </div>
+
+    <div class="row justify-content-md-center">
+        <div class="col-3 text-center">
+            <button type="button" class="btn btn-primary " (click)="onBack()">
+                <fa-icon [icon]="faClose"></fa-icon> Close
+            </button>
+        </div>
+        <div class="col-3 text-center">
+            <button type="button" class="btn btn-primary" (click)="onSave()">
+                <fa-icon [icon]="faSave"></fa-icon> Save
+            </button>
+        </div>
+    </div>
+    <div class="spacer"></div>
+</div>
+

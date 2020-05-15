@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DatePipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Unit } from 'src/app/model/unit';
@@ -17,26 +17,26 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { faExclamation } from '@fortawesome/free-solid-svg-icons';
-import { faList } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-
+declare var $: any; // jquery
 const clone = obj => JSON.parse(JSON.stringify(obj));
 
 @Component({
-  selector: 'app-unit',
-  templateUrl: './unit.component.html',
-  styleUrls: ['./unit.component.css'],
-  providers: [DatePipe]
+  selector: 'app-bulk-create-units',
+  templateUrl: './bulk-create-units.component.html',
+  styleUrls: ['./bulk-create-units.component.css']
 })
 
-export class UnitComponent implements OnInit {
+export class BulkCreateUnitsComponent implements OnInit {
 
   faBin = faTrash;
   faClose = faTimes;
   faBack = faAngleLeft;
   faSave = faSave;
   faExclamation = faExclamation;
-  faList = faList;
+  faDelete = faTimes;
+  faPlus = faPlus;
 
   owners: User[];
   deviceTypes: DeviceType[];
@@ -47,10 +47,13 @@ export class UnitComponent implements OnInit {
   locale: string;
 
   unit: Unit;
+  serialNo: string;
+  serialNos: string[];
+  serialNoMsg: string;
 
   errorMsg = '';
-  displayWaitingDialog = true;
-
+  displayWaitingDialog = false;
+  
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -58,7 +61,7 @@ export class UnitComponent implements OnInit {
     private unitService: UnitService,
     private authService: AuthService,
     private userService: UserService,
-    private location: Location
+    private location: Location    
   ) { }
 
   ngOnInit(): void {
@@ -67,17 +70,24 @@ export class UnitComponent implements OnInit {
     const id = +this.route.snapshot.paramMap.get('id');
     console.log('UnitId: ' + id);
 
+    this.displayWaitingDialog = true;
+
     Promise.all([
       this.getLoggedInInfo(),
       this.getDeviceTypes(),
       this.getBinTypes(),
       this.getContentTypes(),
       this.getOwners()
-    ]).then(values =>{
-      this.getUnit(id)
+    ]).then( values => {
+      this.displayWaitingDialog = false;
     });
 
-    console.log('unit.ngOnInit - end');
+    this.unit = new Unit();
+    this.serialNos = [];
+    this.serialNo = '';
+    this.serialNoMsg = '';
+
+    console.log('unit.ngOnInit - end');  
   }
 
   async getLoggedInInfo() {
@@ -102,92 +112,14 @@ export class UnitComponent implements OnInit {
   async getOwners() {
     this.owners = (await (this.userService.getPossibleBinParents())) as User[];
   }
-
+  
   public compareById(obj1: any, obj2: any): boolean {
     return obj1 && obj2 ? obj1.id === obj2.id : obj1 === obj2;
   }
-
-  public compareByName(obj1: any, obj2: any): boolean {
-    return obj1 && obj2 ? obj1.name === obj2.name : obj1 === obj2;
-  }
-
-	async getUnit(id) {
-    if (id > 0) {
-      this.unitService.getUnit(id)
-        .subscribe(unit => {
-          console.log('Back from getUnit API: ' + id);
-          console.log({ unit });
-
-          let tempUnit: Unit = clone(unit);
-          tempUnit = this.setUnitValues(tempUnit);
-
-          this.unit = tempUnit;
-          this.displayWaitingDialog = false;
-        });      
-    } else {
-      this.unit = new Unit();
-      this.unit.id = 0;
-      
-      this.displayWaitingDialog = false;
-    }
-  }  
-
-  formatDate(date: Date) {
-    // Checks if date is null or undefined (=== strict check for null only)
-    if (date == null) {
-      return null;
-    }
-
-    const pipe = new DatePipe(this.locale);
-
-    const dateStr = pipe.transform(date, 'short');
-    // Format the date to DD/MM/YYYY
-    // const dateStr = date.substr(8, 2) + '/' + date.substr(5, 2) + '/' + date.substr(0, 4) + " " + date.substr(11, 2) + ":" + date.substr(14, 2) + ":" + date.substr(17, 2);
-    // alert('Date Before: ' + date + '   Date String: ' + dateStr);
-    return dateStr;
-  }
-
-  setUnitValues(unit: Unit): Unit {
-    console.log('setUnitValues - start');
-
-    unit.deviceTypeSort = unit.deviceType.name;
-    unit.binTypeSort = unit.binType.name;
-    unit.contentTypeSort = unit.contentType.name;
-
-    unit.insertDateStr = this.formatDate(unit.insertDate);
-    unit.modifiedDateStr = this.formatDate(unit.modifiedDate);
-
-    unit.lastActivityStr = this.formatDate(unit.lastActivity);
-
-    if (unit.location == null) { unit.location = ''; }
-    if (unit.latitude == null) { unit.latitude = 0; }
-    if (unit.longitude == null) { unit.longitude = 0; }
-    if (unit.emptyLevel == null) { unit.emptyLevel = 0; }
-
-    console.log('setUnitValues - end');
-    this.displayWaitingDialog = false;
-    return unit;
-  }
-
+  
   validate() {
     if (this.unit.owner == null || this.unit.owner.id == null) {
       this.errorMsg = "Must select an owner";
-      return false;
-    }
-    if (this.unit.serialNo == null || this.unit.serialNo == '') {
-      this.errorMsg = "Must input Serial No.";
-      return false;
-    }
-    if (this.unit.location == null || this.unit.location == '') {
-      this.errorMsg = "Must input location";
-      return false;
-    }
-    if (this.unit.latitude == null || this.unit.latitude == 0) {
-      this.errorMsg = "Must input latitude";
-      return false;
-    }
-    if (this.unit.longitude == null || this.unit.longitude == 0) {
-      this.errorMsg = "Must input longitude";
       return false;
     }
     if (this.unit.deviceType.id == null || this.unit.deviceType.id == 0) {
@@ -215,18 +147,78 @@ export class UnitComponent implements OnInit {
       this.unit.emptyLevel = 0;
       this.unit.fullLevel = 0;
     }
+    if (this.serialNos == null || this.serialNos.length == 0) {
+      this.errorMsg = "Must input at least 1 Serial No.";
+      return false;
+    }    
 
     return true;
   }
 
-  onReadings() {
-    console.log('onReadings: ' + this.unit.id);
-
-    // this.router.navigate(['/unit', { id: unitId }]);
-    this.router.navigateByUrl('unitReadings/' + this.unit.id);    
+  enterKeyPressed(event) {
+    this.addSerialNo();
   }
 
-  onSave() {
+  clearMsg() {
+    this.serialNoMsg = '';
+  }
+
+  addSerialNo() {
+    // console.log('Add Serial No: ' + this.serialNo);
+
+    // Check if serialNo already in list
+    for (let i = 0; i < this.serialNos.length; i++) {
+      if (this.serialNo.toUpperCase() == this.serialNos[i]) {
+        this.serialNoMsg = 'This serialNo already input';
+        return;
+      }
+    }
+    this.serialNoMsg = '';
+
+    if (this.serialNo != '') {
+      this.serialNos.push(this.serialNo.toUpperCase());
+      this.serialNo = '';
+    }
+
+    // console.log('SerialNos: ' + this.serialNos);
+  }
+
+  deleteSerialNo(serialNo) {
+    // console.log('delete SerialNo.: ' + serialNo);
+    // console.log('SerialNos Before: ' + this.serialNos);
+
+    this.serialNoMsg = '';
+
+    let foundIndex = -1;
+    for (let i =0; i < this.serialNos.length; i++) {
+      if (this.serialNos[i] === serialNo) {
+        foundIndex = i;
+      }
+    }
+
+    if (foundIndex > -1) {
+      this.serialNos.splice(foundIndex--, 1);
+    }
+    // console.log('SerialNos After: ' + this.serialNos);
+  }
+
+  async doSave() {
+    this.errorMsg = '';
+    for(let i = 0; i < this.serialNos.length; i ++) {
+      this.unit.serialNo = this.serialNos[i];
+      this.unitService.saveUnit(this.unit)
+        .subscribe(
+          unit => {
+            console.log('Unit saved');
+          },
+          err => {
+            console.log('Save Error: ', err);
+            this.errorMsg += 'Failed to save - serialNo: ' + err.error.serialNo + '    Error: ' + err.error.message + '\n';
+          }); 
+    }
+  }
+
+  async onSave() {
     console.log('onSave clicked');
     if (!this.validate()) {
       alert('Fix input before saving');
@@ -234,19 +226,17 @@ export class UnitComponent implements OnInit {
       this.errorMsg = '';
       console.log(this.unit);
       this.displayWaitingDialog = true;
-      this.unitService.saveUnit(this.unit)
-        .subscribe(
-          unit => {
-            console.log('After save: ', unit);
 
-            unit => unit;
-            this.displayWaitingDialog = false;
-            this.location.back();
-          },
-          err => {
-            console.log('Save Error: ', err);
-            this.errorMsg = 'Failed to save - ' + err;
-          });
+      await this.doSave();
+
+      if (this.errorMsg == '') {
+        this.unit = new Unit();
+        this.serialNos = [];
+        this.serialNo = '';
+
+        this.errorMsg = 'All saved to database successfully';
+      }
+      this.displayWaitingDialog = false;
     }
   }
 
@@ -255,5 +245,5 @@ export class UnitComponent implements OnInit {
     console.log('Clicked back');
     this.location.back();
   }  
-    
+
 }

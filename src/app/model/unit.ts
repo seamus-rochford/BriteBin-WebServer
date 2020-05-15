@@ -22,9 +22,6 @@ export class Unit {
     emptyLevelSort: number = 0;
     fullLevelSort: number = 0;
 
-    reading40percent: number = 10;
-    reading100percent: number = 10;
-
     lastActivity: Date;
     lastActivityStr: string = '';
 

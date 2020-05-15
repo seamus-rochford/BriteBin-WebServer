@@ -304,7 +304,7 @@ export class MapComponent implements OnInit {
       } else if (reading.binLevelStatus === this.global.binStatus.BIN_FULL) {
         binColor = this.global.binColor.FULL;
       } else {
-        binColor = '#fc8804';
+        binColor = this.global.binColor.IN_BETWEEN;
       }
       // Create marker
       const marker = new google.maps.Marker({

@@ -16,6 +16,7 @@ export class Reading {
     binLevelBCPercent: number;
     compactionDone: boolean;
     noFlapOpenings: number;
+    batteryVoltageReading: number;
     batteryVoltage: number;
     temperature: number;
     noCompactions: number;
@@ -46,4 +47,6 @@ export class Reading {
     readingDateTimeStr: string = '';    
 
     binLevelStatus: number;  // 1 = Empty, 2 = In between, 3 = full
+
+    source: String;
 }

@@ -60,6 +60,7 @@ export class UsersComponent implements OnInit {
   sortOrderStatus = 0;
   sortOrderEmail = 0;
   sortOrderRole = 0;
+  sortOrderParent = 0;
   sortOrderName = 0;
   sortOrderAddr1 = 0;
   sortOrderAddr2 = 0;
@@ -179,11 +180,12 @@ export class UsersComponent implements OnInit {
         let includeUser = true;
 
         if (this.userSearch.searchStr.length > 0) {
-          // Check Status, email, role, name, addr1, addr2, city, county, country, locale
+          // Check Status, email, role, parent, name, addr1, addr2, city, county, country, locale
           // against any part of the search string
           this.userSearch.searchStr.forEach((searchSubStr) => {
             includeUser = includeUser
               && ((userObject.role.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
+                || (userObject.parent.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (userObject.email.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (userObject.status.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
                 || (userObject.name.toUpperCase().indexOf(searchSubStr.toUpperCase()) !== -1)
@@ -227,6 +229,11 @@ export class UsersComponent implements OnInit {
   public sortByRole() {
     this.sortOrderRole = toggleSort(this.sortOrderRole);
     this.users.sort(dynamicSort('roleSort', this.sortOrderRole));
+  }
+
+  public sortByParent() {
+    this.sortOrderParent = toggleSort(this.sortOrderParent);
+    this.users.sort(dynamicSort('parentSort', this.sortOrderParent));
   }
 
   public sortByName() {

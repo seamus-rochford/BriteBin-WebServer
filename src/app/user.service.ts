@@ -23,6 +23,22 @@ export class UserService {
     return this.httpClient.get(url);
   }
 
+  // GET possible parents
+  getPossibleParents() {
+    const url = `${this.userUrl}/getPossibleParents`;
+    console.log('GePossibleParents Url: ' + url);
+
+    return this.httpClient.get(url).toPromise();
+  }
+
+  // GET possible bin parents
+  getPossibleBinParents() {
+    const url = `${this.userUrl}/getPossibleBinParents`;
+    console.log('GePossibleBinParents Url: ' + url);
+
+    return this.httpClient.get(url).toPromise();
+  }
+
   // GET user (by userId)
   getUser(userId: number) {
     const url = `${this.userUrl}/getUser?userId=` + userId;

@@ -10,6 +10,7 @@ import { Role } from 'src/app/model/role';
 import { Status } from 'src/app/model/status';
 import { Locale } from 'src/app/model/locale';
 import { Country } from 'src/app/model/country';
+import { Global } from 'src/app/model/global';
 
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -36,6 +37,8 @@ export class UserComponent implements OnInit {
   faEye = faEye;
 
   roles: Role[];
+  allPossibleParents: User[];
+  possibleParents: User[];
   status: Status[];
   locales: Locale[];
   countries: Country[];
@@ -48,7 +51,7 @@ export class UserComponent implements OnInit {
   user: User;
 
   errorMsg = '';
-  displayWaitingDialog = true;
+  displayWaitingDialog = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -56,29 +59,24 @@ export class UserComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private location: Location,
-    public router: Router
+    public router: Router,
+    public global: Global
   ) { }
 
   ngOnInit(): void {
     console.log('user.ngOnInt');
+    this.displayWaitingDialog = true;
 
     const id = +this.route.snapshot.paramMap.get('id');
     console.log('UserId: ' + id);
 
     Promise.all([
-      this.getStatus()
-    ]).then(values =>{
-      this.setDefaultStatus();
-
-      Promise.all([
-        this.getLoggedInInfo(),
-        this.getUser(id)
-      ]).then(values => {
-        this.getRoles();
-  
-        console.log('User: ');
-        console.log(this.user);
-      });
+      this.getStatus(),
+      this.getLoggedInInfo(),
+      this.getUser(id)
+    ]).then(values => {
+      this.getRoles();
+      this.getPossibleParents();
     });
 
     this.getLocales();
@@ -92,6 +90,8 @@ export class UserComponent implements OnInit {
     console.log(this.loggedInUser);
     this.locale = this.loggedInUser.locale.abbr;
     console.log('Locale: ' + this.locale);
+
+    return this.loggedInUser;
   }
 
   async getRoles() {
@@ -104,7 +104,7 @@ export class UserComponent implements OnInit {
     } else {
       this.roles = [];
       for (let i = 0; i < tempRoles.length; i++) {
-        if (tempRoles[i].id >= this.loggedInUser.role.id) {
+        if (tempRoles[i].id > this.loggedInUser.role.id) {
           this.roles.push(tempRoles[i]);
         }
       }
@@ -113,8 +113,38 @@ export class UserComponent implements OnInit {
     console.log(this.roles);
   }
 
+  async getPossibleParents() {
+    const tempUsers = (await (this.userService.getPossibleParents())) as User[];
+    console.log('tempUsers: ');
+    console.log(tempUsers);
+
+    this.allPossibleParents = tempUsers;
+
+    console.log('Possible Parents: ');
+    console.log(this.allPossibleParents);
+
+    // do a delay of 1 second so getUser has completed
+    if (this.user.role == null) {
+      let count = 0;
+      while (this.user.role == null && count++ < 1000) {
+        setTimeout(() => console.log('this.user.role not loaded'), 10);
+      }
+      if (this.user.role == null) {
+        setTimeout(() => this.filterPossibleParents(this.user.role), 500);
+      } else {
+        this.filterPossibleParents(this.user.role);
+      }
+    } else {
+      this.filterPossibleParents(this.user.role);
+    }
+  }
+
   async getStatus() {
     this.status = (await (this.lookupService.getStatus())) as Status[];
+    console.log('this.status: ' + JSON.stringify(this.status));
+    this.setDefaultStatus();
+
+    return this.status;
   }
 
   setDefaultStatus() {
@@ -139,10 +169,10 @@ export class UserComponent implements OnInit {
     return obj1 && obj2 ? obj1.id === obj2.id : obj1 === obj2;
   }
 
-  public compareByName(obj1: any, obj2: any): boolean {
-    return obj1 && obj2 ? obj1.name === obj2.name : obj1 === obj2;
+  public compareByAbbr(obj1: any, obj2: any): boolean {
+    return obj1 && obj2 ? obj1.abbr === obj2.abbr : obj1 === obj2;
   }
-
+  
 	async getUser(id) {
     if (id > 0) {
       this.userService.getUser(id)
@@ -155,16 +185,21 @@ export class UserComponent implements OnInit {
 
           this.user = tempUser;
           this.displayWaitingDialog = false;
+          return this.user;
         });      
     } else {
+
+      this.displayWaitingDialog = false;
+
       this.user = new User();
       this.user.id = 0;
       
       this.user.status = this.defaultStatus;
-      this.user.parentId = this.loggedInUser.id;
-      this.user.parentName = this.loggedInUser.name;
+      this.user.parent = new User();
+      this.user.parent.id = this.loggedInUser.id;
+      this.user.parent.name = this.loggedInUser.name;
 
-      this.displayWaitingDialog = false;
+      return this.user;
     }
   }  
 
@@ -185,6 +220,7 @@ export class UserComponent implements OnInit {
     console.log('setUserValues - start');
 
     user.roleSort = user.role.name;
+    user.parentSort = user.parent.name;
     user.statusSort = user.status.name;
     user.localeSort = user.locale.name;
     user.countrySort = user.country.name;
@@ -237,6 +273,10 @@ export class UserComponent implements OnInit {
       this.errorMsg = "Must input name";
       return false;
     }
+    if (this.user.parent.id == null || this.user.parent.id == 0) {
+      this.errorMsg = "Must select a parent";
+      return false;
+    }
     if (this.user.country.id == null || this.user.country.id == 0) {
       this.errorMsg = "Must select a country";
       return false;
@@ -275,12 +315,61 @@ export class UserComponent implements OnInit {
             this.location.back();
           },
           err => {
+            this.displayWaitingDialog = false;
             console.log('Save Error: ', err);
             this.errorMsg = 'Failed to save - ' + err;
           });
     }
   }
 
+  private filterPossibleParents(role) {
+    // Filter possible parents allowed based on this role
+    // e.g. Admin can only have an admin parent
+    // Distributer can only have an admin parent
+    // Corporate User can only have and Admin or dist parent
+    // Customer can have admin, dist or Corporate parent
+    // technician can only have Admin or dist parent
+    // driver can only have Corporate or Customer parent
+
+    this.possibleParents = [];
+
+    for (let i = 0; i < this.allPossibleParents.length; i++) {
+      console.log(this.allPossibleParents[i].role.id);
+      if (role.id === this.global.userRoles.ADMIN || role.id === this.global.userRoles.DISTRIBUTER) {  // Admin or distributer
+        if (this.allPossibleParents[i].role.id === this.global.userRoles.ADMIN) {
+          this.possibleParents.push(this.allPossibleParents[i]);
+        }
+      } else if (role.id === this.global.userRoles.CORPORATE) {  // Corporate Customer
+        if (this.allPossibleParents[i].role.id <= this.global.userRoles.DISTRIBUTER) {
+          this.possibleParents.push(this.allPossibleParents[i]);
+        }
+      } else if (role.id === this.global.userRoles.CUSTOMER) {  // Customer
+        if (this.allPossibleParents[i].role.id <= this.global.userRoles.CORPORATE) {
+          this.possibleParents.push(this.allPossibleParents[i]);
+        }
+      } else if (role.id === this.global.userRoles.TECHNICIAN) {  // Technician
+        if (this.allPossibleParents[i].role.id <= this.global.userRoles.DISTRIBUTER) {
+          this.possibleParents.push(this.allPossibleParents[i]);
+        }
+      } else if (role.id === this.global.userRoles.DRIVER) {  // Driver
+        if (this.allPossibleParents[i].role.id === this.global.userRoles.CORPORATE || this.allPossibleParents[i].role.id === this.global.userRoles.CUSTOMER) {
+          this.possibleParents.push(this.allPossibleParents[i]);
+        }
+      }
+    }
+
+    console.log('Available Parents: ');
+    console.log(this.possibleParents);
+  }
+
+  public onRoleChange(newRole): void {  
+    console.log(newRole);
+
+    this.filterPossibleParents(newRole);
+
+    console.log('new Possible Parents');
+    console.log(this.possibleParents);
+  }
 
   onResetPassword() {
     // Reset user password

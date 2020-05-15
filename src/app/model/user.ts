@@ -11,8 +11,8 @@ export class User {
     confirmPassword: string;
     role: Role = new Role();
     roleSort: string;
-    parentId: number = 0;
-    parentName: String = '';
+    parent: User;
+    parentSort: string;
     status: Status = new Status();
     statusSort: string;
 

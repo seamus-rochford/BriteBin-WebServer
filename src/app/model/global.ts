@@ -26,10 +26,11 @@ export class Global {
 
     public userRoles = {
         ADMIN: 0,
-        MUNICIPAL: 1,
-        SUB_MUNICIPAL: 2,
+        DISTRIBUTER: 1,
+        CORPORATE: 2,
         CUSTOMER: 3,
-        DRIVER: 4
+        TECHNICIAN: 4,
+        DRIVER: 5
     }
 
 }

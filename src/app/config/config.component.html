@@ -1,0 +1,37 @@
+<kendo-dialog *ngIf="displayWaitingDialog">
+    <img class="waitingDialog" src="../../assets/images/loader_dark.gif" alt="../../assets/images/loader.gif">
+</kendo-dialog>
+<div class="container">
+    <div class="form-header row">
+        <div class="col-12" >
+            <span><fa-icon [icon]="faCog"></fa-icon>&nbsp;&nbsp;Configuartion</span>
+        </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="row justify-content-end errorMessage" *ngIf="errorMsg !== ''">
+        <span><fa-icon [icon]="faExclamation"></fa-icon>&nbsp;&nbsp;{{ errorMsg }}</span>
+    </div>
+    <div class="row justify-content-md-center" *ngIf="mobileVersion != null">
+        <div class="col-2">
+            <label>Mobile Version:</label>
+        </div>
+        <div class="col-3">
+            <input [(ngModel)]="mobileVersion.value" type="text" name="mobileVersion" class="simpleNumber">
+        </div>
+    </div>
+ 
+    <div class="spacer"></div>
+    <div class="row justify-content-md-center">
+        <div class="col-3 text-center">
+            <button type="button" class="btn btn-primary " (click)="onBack()">
+                <fa-icon [icon]="faClose"></fa-icon> Close
+            </button>
+        </div>
+        <div class="col-3 text-center">
+            <button type="button" class="btn btn-primary" (click)="onSaveMobileVersion()">
+                <fa-icon [icon]="faSave"></fa-icon> Save
+            </button>
+        </div>
+    </div>
+    <div class="spacer"></div>
+</div>
