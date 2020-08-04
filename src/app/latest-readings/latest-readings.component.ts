@@ -324,11 +324,18 @@ export class LatestReadingsComponent implements OnInit {
   public editUnit(unitId) {
     console.log('Edit unit: ' + unitId);
 
-    this.router.navigateByUrl('unit/' + unitId);
+    const currUser = this.authService.getUser();
+    if (currUser.role.id < 2) {
+      // only allow admin and distributers to edit bins
+      this.router.navigateByUrl('unit/' + unitId);
+    } else {
+      // Goto unit readings instead
+      this.router.navigateByUrl('unitReadings/' + unitId);
+    }
   }
 
   public unitReading(unitId) {
-    console.log('Edit unit readings: ' + unitId);
+    console.log('Dislay unit readings: ' + unitId);
 
     this.router.navigateByUrl('unitReadings/' + unitId);
   }

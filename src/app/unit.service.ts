@@ -59,6 +59,14 @@ export class UnitService {
     return this.httpClient.get(url);
   }
 
+  // GET units readings
+  getUnitReadingsLimit(unitId: number, limit: number) {
+    const url = `${this.unitUrl}/getUnitReadings?unitId=${unitId}&limit=${limit}`;
+    console.log('getUnitReadings Url: ' + url);
+
+    return this.httpClient.get(url);
+  }
+
   // GET latest Readings
   getLatestReadings() {
     const url = `${this.unitUrl}/getLatestReadings`;

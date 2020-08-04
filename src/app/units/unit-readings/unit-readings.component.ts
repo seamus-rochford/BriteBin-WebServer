@@ -77,6 +77,9 @@ export class UnitReadingsComponent implements OnInit {
   displaySystemColumns = false;
 
   displayWaitingDialog = true;
+
+  // Limit number of readings returned
+  limit = 200;
   
   constructor(
     private route: ActivatedRoute,
@@ -132,15 +135,18 @@ export class UnitReadingsComponent implements OnInit {
   }  
 
   getUnitReadings(unitId): void {
-    this.unitService.getUnitReadings(unitId).subscribe(
+    console.log('Get Unit Readings: ' + new Date().toISOString());
+    this.unitService.getUnitReadingsLimit(unitId, this.limit).subscribe(
       readings => {
-        console.log({ readings });
+        // console.log({ readings });
+        console.log('Get Unit Readings - back from API: ' + new Date().toISOString());
 
         let tempReadings: Reading[] = clone(readings);
         tempReadings = this.setReadingValues(tempReadings);
 
         this.allReadings = tempReadings;
         this.readings = tempReadings;
+        console.log('get Unit Readings - complete: ' + new Date().toISOString());
       }
     );
   }
@@ -163,7 +169,7 @@ export class UnitReadingsComponent implements OnInit {
   setReadingValues(filteredProperties: Reading[]): Reading[] {
     console.log('setUnitValues - start');
     filteredProperties.forEach(reading => {
-      console.log('Reading: ', { reading });
+      // console.log('Reading: ', { reading });
 
       reading.readingDateTimeStr = this.formatDate(reading.readingDateTime);
     });
@@ -334,6 +340,17 @@ export class UnitReadingsComponent implements OnInit {
         this.readings = tempReadings;
       }
     );
+  }
+
+  getMore() : void {
+    this.displayWaitingDialog = true;
+    
+    if (this.limit < 1000) {
+      this.limit = 1000;
+    } else {
+      this.limit += 1000;
+    }
+    this.getUnitReadings(this.unit.id);
   }
 
   onBack() {

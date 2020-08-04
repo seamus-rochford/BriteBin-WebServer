@@ -19,6 +19,7 @@ import { Global } from '../model/global';
 
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { reduce } from 'rxjs/operators';
+import { promise } from 'protractor';
 
 declare var $: any; // jQuery
 
@@ -77,17 +78,20 @@ export class MapComponent implements OnInit {
       this.getBinLevels(),
       this.getContentTypes()
     ]).then(values => {
-      this.getLatestReadings();
 
-      this.defaultAllSelected(this.mapSearch.deviceTypes);
-      this.defaultAllSelected(this.mapSearch.binTypes);
-      this.defaultAllSelected(this.mapSearch.binLevels);
-      this.defaultAllSelected(this.mapSearch.contentTypes);
-      this.defaultAllSelected(this.mapSearch.owners);
-    });    
+        this.getLatestReadings();
+
+        this.defaultAllSelected(this.mapSearch.deviceTypes);
+        this.defaultAllSelected(this.mapSearch.binTypes);
+        this.defaultAllSelected(this.mapSearch.binLevels);
+        this.defaultAllSelected(this.mapSearch.contentTypes);
+        this.defaultAllSelected(this.mapSearch.owners);
+    });
+    
   } 
 
   defaultAllSelected (objArray: any) {
+    console.log(objArray);
     for (let i = 0; i < objArray.length; i++) {
       objArray[i].selected = true;
     }
@@ -335,14 +339,37 @@ export class MapComponent implements OnInit {
       // Add click event to marker
       marker.addListener("click", () => {
         console.log('Unit id: ' + reading.unit.id);
-        this.router.navigateByUrl('unit/' + reading.unit.id);
         // infoWindow.open(marker.getMap(), marker);
+        
+        const currUser = this.authService.getUser();
+        if (currUser.role.id < 2) {
+          // only allow admin and distributers to edit bins
+          this.router.navigateByUrl('unit/' + reading.unit.id);
+        } else {
+          // Goto unit readings instead
+          this.router.navigateByUrl('unitReadings/' + reading.unit.id);
+        }
+    
       });
 
       this.mapMarkers.push(marker);
       // Add marker to map
       this.mapMarkers[index].setMap(this.map);
     });
+  }
+
+  public editUnit(unitId) {
+    console.log('Edit unit: ' + unitId);
+
+    const currUser = this.authService.getUser();
+    if (currUser.role.id < 2) {
+      // only allow admin and distributers to edit bins
+      this.router.navigateByUrl('unit/' + unitId);
+    } else {
+      // Goto unit readings instead
+      this.router.navigateByUrl('unitReadings/' + unitId);
+    }
+
   }
 
   mapInitializer(readings) {

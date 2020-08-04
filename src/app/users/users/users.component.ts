@@ -146,6 +146,7 @@ export class UsersComponent implements OnInit {
       // console.log('User: ', { user });
 
       user.roleSort = user.role.name;
+      user.parentSort = user.parent.name;
       user.statusSort = user.status.name;
       user.localeSort = user.locale.name;
       user.countrySort = user.country.name;

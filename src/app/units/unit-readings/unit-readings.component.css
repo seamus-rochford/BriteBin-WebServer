@@ -24,3 +24,11 @@ td {
     text-align: center;
     padding: 1px;
 }
+
+.more {
+    color: mediumblue;
+}
+.more:hover {
+    cursor: pointer;
+    text-decoration: underline ;
+}

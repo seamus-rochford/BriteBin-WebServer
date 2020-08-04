@@ -30,7 +30,7 @@ export class AuthService {
       };
       return this.http.post<any>(this.loginUrl, user, httpOptions);
     }
-  
+
     loggedIn() {
       // console.log('loggedIn: ' + !!localStorage.getItem('token') && !!localStorage.getItem('user'));
       return !!localStorage.getItem('token') && !!localStorage.getItem('user');
@@ -54,6 +54,11 @@ export class AuthService {
     verifyToken() {
       console.log('auth.service.ts - VerifyToken');
       return this.http.get<any>(this.verifyUrl);
+    }
+
+    changeStatus(status) {
+      this.user.status = status;
+      localStorage.setItem('user', JSON.stringify(this.user));
     }
   
     logoutUser() {

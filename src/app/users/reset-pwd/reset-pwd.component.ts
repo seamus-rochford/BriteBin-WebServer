@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/auth.service';
 
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'src/app/model/user';
+import { Status } from 'src/app/model/status';
 
 const clone = obj => JSON.parse(JSON.stringify(obj));
 
@@ -33,7 +34,8 @@ export class ResetPwdComponent implements OnInit {
     private router: Router,
     private location: Location,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private changeDedectionService: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -87,7 +89,13 @@ export class ResetPwdComponent implements OnInit {
             console.log('Password changed successfully ' + res);
             alert('Password successfully reset');
 
-            this.router.navigate(['/default']);
+            let status = new Status();
+            status.id = 1;
+            status.name = 'ACTIVE';
+            this.authService.changeStatus(status);
+
+
+            this.router.navigate(['/default']).then(res => this.changeDedectionService.detectChanges());
           },
           err => {
             console.log('Change password Error: ', err.error);

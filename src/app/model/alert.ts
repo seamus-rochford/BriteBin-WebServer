@@ -15,6 +15,7 @@ export class Alert {
     binTilted: boolean;
     serviceDoorOpen: boolean;
     flapStuckOpen: boolean;
+    damage:boolean;
 
     email: boolean;
     sms: boolean;

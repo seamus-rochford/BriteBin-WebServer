@@ -24,7 +24,8 @@
             <input type="hidden" [(ngModel)]="unit.id">
         </div>
         <div class="col-3">
-            <input [(ngModel)]="unit.serialNo" type="text" name="serialNo">
+            <input [(ngModel)]="unit.serialNo" type="text" name="serialNo" *ngIf="unit.id != 0" readonly class="disabled">
+            <input [(ngModel)]="unit.serialNo" type="text" name="serialNo" *ngIf="unit.id == 0">
         </div>
         <div class="col-2">
             <label>Owner</label>
