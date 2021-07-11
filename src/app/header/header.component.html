@@ -1,11 +1,11 @@
-<div id="header" class="navbar fixed-top navbar-expand-sm">
+<div id="header" class="navbar navbar-expand-sm">
     <a class="navbar-brand" href="https://www.pelmfg.com/">
-        <img src="./assets/images/logo.png" width="120" alt="">
+        <img src="./assets/images/logo-pel.png" alt="">
     </a>    
     <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target=".navbar-collapse">
         <i class="fa fa-bars"></i>
     </button>
-    <nav class="collapse navbar-collapse" *ngIf="this.mainMenuVisible()">
+    <nav class="collapse navbar-collapse" *ngIf="mainMenuVisible()">
         <ul class="nav navbar-nav">
             <li class="nav-item"><a routerLink="/latestReadings" class="nav-link">Bin Readings</a></li>
             <li class="divider-vertical"></li>
@@ -13,7 +13,7 @@
             <li class="divider-vertical"></li>
             <li class="dropdown nav-item" *ngIf="this.maintenaceMenuVisible()"> 
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">Maintenance</a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" style="border:1px solid black">
                     <li class="dropdown-item"><a routerLink="/users" class="nav-link">User Maintenance</a>
                     </li>
                     <li class="dropdown-item"><a routerLink="/units" class="nav-link">Bin Maintenance</a>
@@ -31,7 +31,7 @@
         <ul class="nav navbar-nav ml-auto">
             <li class="dropdown nav-item"> 
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">{{ getDisplayName() }}</a>
-                <ul class="dropdown-menu dropdown-menu-right">
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
                     <li class="dropdown-item"><a routerLink="/resetPwd/0" class="nav-link">Reset Password</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-item"><a routerLink="" class="nav-link" (click)="logout()">Log Out</a></li>

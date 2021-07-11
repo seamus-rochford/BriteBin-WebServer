@@ -12,7 +12,7 @@ export class HeaderComponent implements OnInit {
 
   displayName = '';
   roleName = '';
-  logo = './assets/images/logo.png';
+  logo = './assets/images/logo-pel.png';
   currUser: User;
 
   public isUserDropdownOpen = false;

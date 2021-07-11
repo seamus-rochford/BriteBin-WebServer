@@ -157,8 +157,10 @@ export class LatestReadingsComponent implements OnInit {
 
     const tempReadings = [];
 
+    console.log(this.allReadings);
+
     this.allReadings.forEach((readingObject: Reading, rowIndex: number) => {
-      // console.log(readingObject);
+      console.log(readingObject);
 
       // If readingObject is null, undefined or empty - ignore
       if (readingObject != null && Object.keys(readingObject).length !== 0) {

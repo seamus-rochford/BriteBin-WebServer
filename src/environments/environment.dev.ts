@@ -2,10 +2,9 @@ export const environment = {
   production: true,
 
   //apiUrl: 'https://www.britebin.com:9443/britebin-app-server/api',
-  // apiUrl: 'http://161.35.32.177:8080/BriteBin/api',
+  apiUrl: 'http://161.35.32.177:8080/BriteBin/api',
   // apiUrl: 'http:/localhost:8080/BriteBin/api',
   // apiUrl: 'http://10.253.40.99:8080/BriteBin/api',   // This version was required by Croatia
-  apiUrl: 'http://54.246.106.83:8080/BriteBin/api',
 
   // DEFINE USER ROLES CONSTANTS
   ROLE_ADMIN: 0,

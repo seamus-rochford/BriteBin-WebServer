@@ -1,1 +1,18 @@
 
+.copyright-footer {
+    width:100%;
+    text-align: center;
+}
+
+#left {
+    float:left;
+}
+
+#center {
+    padding-top: 1em;
+    display: inline-block;
+}
+
+#right {
+    float:right;
+}

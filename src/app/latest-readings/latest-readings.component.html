@@ -1,7 +1,7 @@
 <kendo-dialog *ngIf="displayWaitingDialog">
     <img class="waitingDialog" src="../../../assets/images/loader2.gif" alt="../../../assets/images/loader2.gif">
 </kendo-dialog>
-<div class="container-fluid">
+<div class="container-fluid mainContent">
     <div class="spacer"></div>
     <div class="form-header">
         Lastest Reading for all Bins
@@ -95,7 +95,7 @@
                 </tr>
             </thead>
             <tbody class="table-body">
-                <tr *ngFor="let reading of readings; let i = index" >
+                <tr *ngFor="let reading of readings; let i = index"  style="cursor:pointer;">
                     <td style="text-align: center;">
                         <input type="checkbox" id={{reading.id}} value={{reading.id}} name="select-checkbox" class="checkbox">
                     </td>

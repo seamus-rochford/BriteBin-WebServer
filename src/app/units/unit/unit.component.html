@@ -1,7 +1,7 @@
 <kendo-dialog *ngIf="displayWaitingDialog">
     <img class="waitingDialog" src="../../../assets/images/loader_dark.gif" alt="../../../assets/images/loader.gif">
 </kendo-dialog>
-<div class="container" *ngIf="unit">
+<div class="container mainContent" *ngIf="unit">
     <div class="form-header row">
         <div class="col-12" *ngIf="unit.id == 0">
             <span><fa-icon [icon]="faBin"></fa-icon>&nbsp;&nbsp;Add Bin</span>
